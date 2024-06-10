@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:trust_reservation_second/views/loading.dart';
-import 'package:trust_reservation_second/views/login_page2.dart';
+import 'package:trust_reservation_second/views/auth_screen.dart';
+import 'package:trust_reservation_second/views/splashscreen.dart';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:trust_reservation_second/views/login_screen.dart';
+import 'package:trust_reservation_second/views/resset_password_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,10 +33,18 @@ class MyApp extends StatelessWidget {
       title: 'Hotel Management',
       theme: ThemeData(
         primarySwatch: Colors.orange,
+      ).copyWith(
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: <TargetPlatform, PageTransitionsBuilder>{
+            TargetPlatform.android: ZoomPageTransitionsBuilder(),
+          },
+        ),
       ),
-      home:  const  Loading(),
+      home:  const SplashScreen(),
       routes:{
-        '/loginpage':(context)=>const LoginPage(),
+        '/authscreen':(context)=>const AuthScreen(),
+        '/registerscreen':(context)=>const ResetPasswordScreen(),
+        '/loginscreen':(context)=>const LoginScreen(),
       }
     );
   }

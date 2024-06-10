@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:trust_reservation_second/views/auth_screen.dart';
+import 'package:trust_reservation_second/views/login_screen.dart';
 
-class Loading extends StatefulWidget {
-  const Loading({super.key});
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
 
   @override
-  State<Loading> createState() => _LoadingState();
+  State<SplashScreen> createState() => _SplashScreengState();
 }
 
-class _LoadingState extends State<Loading> {
+class _SplashScreengState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
     // Naviguer automatiquement vers l'écran de connexion après quelques secondes
-    Future.delayed(const Duration(seconds: 15), () {
+    Future.delayed(const Duration(seconds: 3), () {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => const LoginScreen()),
         (route) => false,
@@ -31,7 +31,7 @@ class _LoadingState extends State<Loading> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.accessible_forward,
+                Icons.send_and_archive_rounded,
                 size: 100,
                 color: Colors.white,
               ),

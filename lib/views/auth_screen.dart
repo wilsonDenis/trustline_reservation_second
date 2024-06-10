@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:animations/animations.dart';
+import 'login_screen.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+
+class AuthScreen extends StatelessWidget {
+  const AuthScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +46,7 @@ class LoginScreen extends StatelessWidget {
             alignment: Alignment.bottomCenter,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
-              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 100),
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 200),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
@@ -58,56 +61,28 @@ class LoginScreen extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: const Color.fromARGB(255, 0, 26, 51),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                      minimumSize: const Size(double.infinity, 50),
+                 
+                 
+                   OpenContainer(
+                    transitionType: ContainerTransitionType.fade,
+                    closedElevation: 0,
+                    closedShape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5.0),
                     ),
-                    child: const Text('Create Account'),
-                  ),
-                  const SizedBox(height: 5),
-                  const Row( mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width:
-                            50, // Ajustez cette valeur pour la largeur souhaitée
-                        child: Divider(
-                          color: Color.fromARGB(87, 0, 0, 0),
+                    closedColor: const Color.fromARGB(255, 0, 26, 51),
+                    openBuilder: (context, _) => const LoginScreen(),
+                    closedBuilder: (context, openContainer) => ElevatedButton(
+                      onPressed: openContainer,
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: const Color.fromARGB(255, 0, 26, 51),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5.0),
                         ),
+                        minimumSize: const Size(double.infinity, 50),
                       ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: Text(
-                          'or',
-                          style: TextStyle(color: Color.fromARGB(219, 0, 0, 0)),
-                        ),
-                      ),
-                      SizedBox(
-                        width:
-                            50, // Ajustez cette valeur pour la largeur souhaitée
-                        child: Divider(
-                          color: Color.fromARGB(87, 0, 0, 0),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 5),
-                  OutlinedButton(
-                    onPressed: () {},
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color.fromARGB(255, 0, 26, 51),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                      minimumSize: const Size(double.infinity, 50),
-                      side: const BorderSide(color: Color.fromARGB(255, 0, 26, 51),),
+                      child: const Text('Login '),
                     ),
-                    child: const Text('Login'),
                   ),
                   const SizedBox(height: 10),
                 ],

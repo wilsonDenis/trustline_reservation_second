@@ -38,6 +38,8 @@ dependencies:
   http: ^1.2.1
   shared_preferences: ^2.2.3
   awesome_notifications: ^0.9.3+1
+  animations: ^2.0.11
+  awesome_notifications_fcm: ^0.9.3+1
 
 dev_dependencies:
   flutter_test:
