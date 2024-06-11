@@ -48,60 +48,77 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> with SingleTi
   }
 
   Future<void> _submit() async {
-    if (_formKey.currentState!.validate()) {
-      if (txtPassword.text != txtConfirmPassword.text) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Error'),
-            content: const Text('Passwords do not match.'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
-      } else {
-        // Simuler l'appel API ici
-        try {
-          // Simulation d'un appel API
-          await Future.delayed(const Duration(seconds: 2));
-          // Si tout se passe bien, vous pouvez afficher un message de succès ou rediriger l'utilisateur
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Success'),
-              content: const Text('Password has been successfully reset.'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('OK'),
-                ),
-              ],
+  if (_formKey.currentState!.validate()) {
+    if (txtPassword.text!= txtConfirmPassword.text) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Erreur'),
+          content: const Text('Les mots de passe ne correspondent pas.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                if (!mounted) return;
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
             ),
-          );
-        } catch (e) {
-          // Gérer l'erreur de l'API ici
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Error'),
-              content: Text('An error occurred: $e'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('OK'),
-                ),
-              ],
-            ),
-          );
-        }
+          ],
+        ),
+      );
+    } else {
+      // Simulate API call here
+      try {
+        // Simulate API call
+        await Future.delayed(const Duration(seconds: 2));
+        // If everything goes well, you can display a success message or redirect the user
+        // Defer the showDialog call until after the successful completion of the async operation
+        _showSuccessDialog(context);
+      } catch (e) {
+        // Handle API error here
+        _showErrorDialog(context, e.toString());
       }
     }
   }
+}
 
+void _showSuccessDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Succès'),
+      content: const Text('Le mot de passe a été réinitialisé avec succès.'),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            if (!mounted) return;
+            Navigator.of(context).pop();
+          },
+          child: const Text('OK'),
+        ),
+      ],
+    ),
+  );
+}
+
+void _showErrorDialog(BuildContext context, String errorMessage) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Erreur'),
+      content: Text(errorMessage),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            if (!mounted) return;
+            Navigator.of(context).pop();
+          },
+          child: const Text('OK'),
+        ),
+      ],
+    ),
+  );
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
