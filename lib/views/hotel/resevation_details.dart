@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
-class HotelProfile extends StatelessWidget {
-  const HotelProfile({super.key});
+class ReservationDetails extends StatelessWidget {
+  const ReservationDetails({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Hotel Profile'),
+        title: const Text('Reservation Details'),
       ),
       body: const Center(
-        child: Text('Hotel Profile Page'),
+        child: Text('Reservation Details Page'),
       ),
     );
   }

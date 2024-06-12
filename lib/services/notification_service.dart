@@ -1,7 +1,6 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:trust_reservation_second/services/local_storage.dart';
-
 import 'api_service.dart';
 
 class NotificationService {
@@ -21,17 +20,18 @@ class NotificationService {
     );
   }
 
-  static Future<void> showNotification(int id, String title, String body) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'your_channel_id', 
-      'your_channel_name', 
+  static Future<void> showNotification(int id, String title, String body, {String? icon}) async {
+    final AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'your_channel_id',
+      'your_channel_name',
       channelDescription: 'your_channel_description',
       importance: Importance.max,
       priority: Priority.high,
-      showWhen: false,
+      largeIcon: icon != null ? DrawableResourceAndroidBitmap(icon) : null,
+      styleInformation: const BigTextStyleInformation(''),
     );
 
-    const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
+    final NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
 
     await flutterLocalNotificationsPlugin.show(
       id,
@@ -41,17 +41,18 @@ class NotificationService {
     );
   }
 
-  static Future<void> scheduleNotification(int id, String title, String body, DateTime scheduledTime) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'your_channel_id', 
-      'your_channel_name', 
+  static Future<void> scheduleNotification(int id, String title, String body, DateTime scheduledTime, {String? icon}) async {
+    final AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'your_channel_id',
+      'your_channel_name',
       channelDescription: 'your_channel_description',
       importance: Importance.max,
       priority: Priority.high,
-      showWhen: false,
+      largeIcon: icon != null ? DrawableResourceAndroidBitmap(icon) : null,
+      styleInformation: const BigTextStyleInformation(''),
     );
 
-    const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
+    final NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
       id,
@@ -65,17 +66,16 @@ class NotificationService {
     );
   }
 
-  // Exemple de méthode utilisant ApiService pour envoyer une notification via l'API
-  static Future<void> sendApiNotification(int userId, String title, String body) async {
+  static Future<void> sendApiNotification(int userId, String title, String body, {String? icon}) async {
     Map<String, dynamic> data = {
       'user_id': userId,
       'title': title,
       'body': body,
+      'icon': icon,
     };
     await ApiService.sendNotification(data);
   }
 
-  // Exemple de méthode utilisant LocalStorageService pour obtenir des données locales
   static Future<void> showNotificationWithLocalData(int id) async {
     final token = await LocalStorageService.getData('token');
     if (token != null) {
