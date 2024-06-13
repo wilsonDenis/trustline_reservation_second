@@ -44,6 +44,13 @@ dependencies:
   flutter_timezone: ^1.0.8
   timezone: ^0.9.3
   badges: ^3.1.2
+  provider: ^6.1.2
+  carousel_slider: ^4.2.1
+  flutter_datetime_picker: ^1.5.1
+  flutter_switch: ^0.3.2
+  intl: ^0.19.0
+
+
 
 dev_dependencies:
   flutter_test:
@@ -69,7 +76,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-   - assets/
+  - assets/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

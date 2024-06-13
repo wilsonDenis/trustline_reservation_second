@@ -1,139 +1,191 @@
+// hotel_dashboard.dart
 import 'package:flutter/material.dart';
-import 'package:trust_reservation_second/views/hotel/current_reservation.dart';
-import 'package:trust_reservation_second/views/hotel/hotel_notifications_page.dart';
-import 'package:trust_reservation_second/views/hotel/resevation_details.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:trust_reservation_second/views/hotel/create_reservation.dart';
-import 'package:trust_reservation_second/views/hotel/edit_reservation.dart';
-import 'package:trust_reservation_second/views/hotel/reservation_history.dart';
-import 'package:trust_reservation_second/views/hotel/hotel_profile.dart';
-import 'package:trust_reservation_second/views/hotel/account_settings.dart';
-import 'package:trust_reservation_second/views/hotel/messaging.dart';
+import 'package:trust_reservation_second/widgets/custom_container.dart';
+import 'package:trust_reservation_second/views/hotel/hotel_notifications_page.dart';
 
 
-class HotelDashboard extends StatelessWidget {
+class HotelDashboard extends StatefulWidget {
   const HotelDashboard({super.key});
+
+  @override
+  _HotelDashboardState createState() => _HotelDashboardState();
+}
+
+class _HotelDashboardState extends State<HotelDashboard> {
+  int _selectedIndex = 0;
+
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> dashboardItems = [
       {
         'title': 'Create Reservation',
+        'count': 0,
         'icon': Icons.add,
+        'color': Colors.pink,
         'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateReservation())),
+
       },
       {
-        'title': 'Edit Reservation',
-        'icon': Icons.edit,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const EditReservation())),
+        'title': 'Listes',
+        'count': 298,
+        'icon': Icons.group_outlined,
+        'color': Colors.orange,
+        'onTap': () {}, // Navigation action here
       },
       {
-        'title': 'Reservation Details',
-        'icon': Icons.details,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => ReservationDetails())),
-      },
-      {
-        'title': 'Reservation History',
-        'icon': Icons.history,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ReservationHistory())),
-      },
-      {
-        'title': 'Current Reservations',
-        'icon': Icons.list,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const CurrentReservations())),
-      },
-      {
-        'title': 'Hotel Profile',
-        'icon': Icons.person,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const HotelProfile())),
-      },
-      {
-        'title': 'Account Settings',
-        'icon': Icons.settings,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const AccountSettings())),
-      },
-      {
-        'title': 'Messaging',
-        'icon': Icons.message,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const Messaging())),
-        'badge': 'messageCount',
+        'title': 'Events',
+        'count': 54,
+        'icon': Icons.event_outlined,
+        'color': Colors.blue,
+        'onTap': () {}, // Navigation action here
       },
       {
         'title': 'Notifications',
-        'icon': Icons.notifications,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const HotelNotificationsPage())),
-        'badge': 'notificationCount',
+        'count': 48,
+        'icon': Icons.notifications_outlined,
+        'color': Colors.green,
+        'onTap': () {}, // Navigation action here
       },
     ];
 
     return Scaffold(
-    
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(70.0), // Increase the height to give more space
+        child: SafeArea(
+          child: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.menu, color: Colors.black),
+              onPressed: () {
+                // Action for menu button
+              },
+            ),
+            title: const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Denis wilson',
+                  style: TextStyle(color: Colors.black, fontSize: 20),
+                ),
+                Text(
+                  'Tue, 05 Dec',
+                  style: TextStyle(color: Colors.grey, fontSize: 14),
+                ),
+              ],
+            ),
+            actions: [
+              badges.Badge(
+                showBadge: true,
+                badgeContent: const Text('5', style: TextStyle(color: Colors.white)),
+                child: IconButton(
+                  icon: const Icon(Icons.notifications, color: Colors.grey),
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const HotelNotificationsPage()));
+                  },
+                ),
+              ),
+              const SizedBox(width: 16),
+            ],
+          ),
+        ),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
           child: Column(
             children: [
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
+              const SizedBox(height: 20),
+              CarouselSlider(
+                options: CarouselOptions(
+                  height: 200.0,
+                  autoPlay: true,
+                  enlargeCenterPage: true,
+                  aspectRatio: 16 / 9,
+                  autoPlayInterval: const Duration(seconds: 6),
+                  autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                  autoPlayCurve: Curves.fastOutSlowIn,
+                  pauseAutoPlayOnTouch: true,
                 ),
-                itemCount: dashboardItems.length,
-                itemBuilder: (context, index) {
-                  final item = dashboardItems[index];
-                  return Card(
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: InkWell(
-                      onTap: item['onTap'],
-                      child: Container(
-                        padding: const EdgeInsets.all(20),
+                items: [1, 2, 3, 4, 5].map((i) {
+                  return Builder(
+                    builder: (BuildContext context) {
+                      return Container(
+                        width: MediaQuery.of(context).size.width,
+                        margin: const EdgeInsets.symmetric(horizontal: 5.0),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.grey,
+                          image: DecorationImage(
+                            image: AssetImage('assets/carousel_image_$i.jpg'),
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            // Consumer<NotificationModel>(
-                            //   builder: (context, model, child) {
-                            //     return Badge(
-                            //       showBadge: item.containsKey('badge') &&
-                            //           ((item['badge'] == 'notificationCount' && model.notificationCount > 0) ||
-                            //               (item['badge'] == 'messageCount' && model.messageCount > 0)),
-                            //       badgeContent: Text(
-                            //         item['badge'] == 'notificationCount'
-                            //             ? model.notificationCount.toString()
-                            //             : model.messageCount.toString(),
-                            //         style: const TextStyle(color: Colors.white),
-                            //       ),
-                            //       child: Icon(item['icon'], size: 40, color: Colors.grey[700]),
-                            //     );
-                            //   },
-                            // ),
-                            const SizedBox(height: 10),
-                            Text(
-                              item['title'],
-                              style: const TextStyle(
-                                // color: Colors.grey[00],
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                      );
+                    },
                   );
-                },
+                }).toList(),
+              ),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                  ),
+                  itemCount: dashboardItems.length,
+                  itemBuilder: (context, index) {
+                    final item = dashboardItems[index];
+                    return CustomContainer(
+                      icon: item['icon'],
+                      title: item['title'],
+                      count: item['count'],
+                      color: item['color'],
+                      onTap: item['onTap'],
+                    );
+                  },
+                ),
               ),
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person, color: Colors.grey),
+            label: 'Profile',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list, color: Colors.grey),
+            label: 'Reservations',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.history, color: Colors.grey),
+            label: 'History',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.message, color: Colors.grey),
+            label: 'Messages',
+          ),
+         
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor:  const Color.fromARGB(255, 0, 26, 51),
+        onTap: _onItemTapped,
       ),
     );
   }

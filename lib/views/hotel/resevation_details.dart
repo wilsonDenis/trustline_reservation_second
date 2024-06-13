@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-
-class ReservationDetails extends StatelessWidget {
-  const ReservationDetails({super.key});
+class ResevationDetails extends StatefulWidget {
+  const ResevationDetails({super.key});
 
   @override
+  State<ResevationDetails> createState() => _ResevationDetailsState();
+}
+
+class _ResevationDetailsState extends State<ResevationDetails> {
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Reservation Details'),
-      ),
-      body: const Center(
-        child: Text('Reservation Details Page'),
-      ),
-    );
+    return Container();
   }
 }

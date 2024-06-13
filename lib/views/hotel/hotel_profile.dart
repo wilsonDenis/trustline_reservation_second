@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-
-class HotelProfile extends StatelessWidget {
+class HotelProfile extends StatefulWidget {
   const HotelProfile({super.key});
 
   @override
+  State<HotelProfile> createState() => _HotelProfileState();
+}
+
+class _HotelProfileState extends State<HotelProfile> {
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Hotel Profile'),
-      ),
-      body: const Center(
-        child: Text('Hotel Profile Page'),
-      ),
-    );
+    return Container();
   }
 }
