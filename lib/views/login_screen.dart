@@ -124,7 +124,7 @@ void _navigateToChauffeurDashboard() {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  'SeatSmart',
+                  'TrustLine',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -179,7 +179,7 @@ void _navigateToChauffeurDashboard() {
                           borderWidth: 1.0,
                           validator: (value) => value!.isEmpty ? 'Email requis' : null,
                           prefixIcon: Icons.mail,
-                          showSuffixIcon: false,
+                          // showSuffixIcon: false,
                         ),
                         const SizedBox(height: 15),
                         CustomTextFormField(
@@ -191,7 +191,7 @@ void _navigateToChauffeurDashboard() {
                           borderWidth: 1.0,
                           validator: (value) => value!.isEmpty ? 'Mot de passe requis' : null,
                           prefixIcon: Icons.lock,
-                          showSuffixIcon: true,
+                          // showSuffixIcon: false,
                         ),
                         const SizedBox(height: 15),
                         Align(
@@ -205,7 +205,9 @@ void _navigateToChauffeurDashboard() {
                         ),
                         const SizedBox(height: 15),
                         ElevatedButton(
-                          onPressed: _login,
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/hoteldashboard');
+                            },
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
                             backgroundColor: const Color.fromARGB(255, 0, 26, 51),

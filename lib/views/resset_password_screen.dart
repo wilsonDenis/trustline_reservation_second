@@ -179,7 +179,7 @@ void _showErrorDialog(BuildContext context, String errorMessage) {
                             labelText: 'New Password',
                             hintText: 'Enter your new password',
                             prefixIcon: Icons.lock,
-                            showSuffixIcon: true,
+                            // showSuffixIcon: true,
                             validator: (value) =>
                                 value!.isEmpty ? 'Password is required' : null,
                             controller: txtPassword,
@@ -189,7 +189,7 @@ void _showErrorDialog(BuildContext context, String errorMessage) {
                             labelText: 'Confirm Password',
                             hintText: 'Confirm your new password',
                             prefixIcon: Icons.lock,
-                            showSuffixIcon: true,
+                            // showSuffixIcon: true,
                             validator: (value) =>
                                 value!.isEmpty ? 'Password confirmation is required' : null,
                             controller: txtConfirmPassword,

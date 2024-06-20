@@ -1,6 +1,9 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:trust_reservation_second/constants/colors_app.dart';
+import 'package:trust_reservation_second/widgets/custom_button.dart';
 
 class CreateReservation extends StatefulWidget {
   const CreateReservation({super.key});
@@ -10,10 +13,10 @@ class CreateReservation extends StatefulWidget {
 }
 
 class _CreateReservationState extends State<CreateReservation> {
-  final TextEditingController _departureController = TextEditingController();
-  final TextEditingController _arrivalController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
+  bool isDefaultAddress = true;
 
   @override
   void initState() {
@@ -21,19 +24,25 @@ class _CreateReservationState extends State<CreateReservation> {
     _loadAddresses();
   }
 
+  @override
+  void dispose() {
+    _addressController.dispose();
+    super.dispose();
+  }
+
   Future<void> _loadAddresses() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _departureController.text = prefs.getString('departure_address') ?? 'Adresse de départ';
-      _arrivalController.text = prefs.getString('arrival_address') ?? 'Adresse d\'arrivée';
+      _addressController.text = prefs.getString('default_address') ?? 'Adresse de départ';
     });
   }
 
-  void _swapLocations() {
+  void _swapAddress() {
     setState(() {
-      String temp = _departureController.text;
-      _departureController.text = _arrivalController.text;
-      _arrivalController.text = temp;
+      isDefaultAddress = !isDefaultAddress;
+      _addressController.text = isDefaultAddress
+          ? 'Adresse de départ' // Default address placeholder
+          : 'Adresse d\'arrivée'; // Changing address placeholder
     });
   }
 
@@ -74,6 +83,12 @@ class _CreateReservationState extends State<CreateReservation> {
             'assets/carousel_image_4.jpg',
             fit: BoxFit.cover,
           ),
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 7.0, sigmaY: 7.0),
+            child: Container(
+              color: Colors.black.withOpacity(0.1),
+            ),
+          ),
           Center(
             child: SingleChildScrollView(
               child: Padding(
@@ -81,7 +96,7 @@ class _CreateReservationState extends State<CreateReservation> {
                 child: Container(
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Colors.white.withOpacity(0.8),
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
@@ -168,47 +183,38 @@ class _CreateReservationState extends State<CreateReservation> {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _departureController,
-                        decoration: InputDecoration(
-                          labelText: 'Adresse de départ',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: _addressController,
+                              decoration: InputDecoration(
+                                labelText: isDefaultAddress ? 'Adresse de départ' : 'Adresse d\'arrivée',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _arrivalController,
-                        decoration: InputDecoration(
-                          labelText: 'Adresse d\'arrivée',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
+                          IconButton(
+                            icon: const Icon(Icons.swap_horiz, color: ColorsApp.primaryColor),
+                            onPressed: _swapAddress,
                           ),
-                        ),
+                        ],
                       ),
                       const SizedBox(height: 24),
                       Center(
                         child: Builder(
                           builder: (BuildContext context) {
-                            return ElevatedButton(
+                            return CustomButton(
                               onPressed: () {
-                                if (_departureController.text.isNotEmpty &&
-                                    _arrivalController.text.isNotEmpty &&
+                                if (_addressController.text.isNotEmpty &&
                                     _selectedDate != null &&
                                     _selectedTime != null) {
                                   // Handle the form submission
                                 }
                               },
-                              style: ElevatedButton.styleFrom(
-                                foregroundColor: Colors.white,
-                                backgroundColor: const Color.fromARGB(255, 0, 26, 51),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5.0),
-                                ),
-                                minimumSize: const Size(double.infinity, 50),
-                              ),
-                              child: const Text('Confirmer la Réservation'),
+                              text: 'Confirmer',
                             );
                           },
                         ),
@@ -222,12 +228,5 @@ class _CreateReservationState extends State<CreateReservation> {
         ],
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _departureController.dispose();
-    _arrivalController.dispose();
-    super.dispose();
   }
 }

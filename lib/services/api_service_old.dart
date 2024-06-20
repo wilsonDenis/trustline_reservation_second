@@ -18,19 +18,27 @@ class ApiServiceOld {
     print("Fetching auth token from SharedPreferences...");
     SharedPreferences pref = await SharedPreferences.getInstance();
     String? token = pref.getString('token');
-    print("Auth token: $token");
+    if (kDebugMode) {
+      print("Auth token: $token");
+    }
     return token ?? '';
   }
 
   static T _handleResponse<T>(
       http.Response response, T Function(dynamic) modelFromJson) {
-    print("Handling response with status code: ${response.statusCode}");
+    if (kDebugMode) {
+      print("Handling response with status code: ${response.statusCode}");
+    }
     if (response.statusCode == 200) {
       T model = modelFromJson(jsonDecode(response.body));
-      print("Parsed model from response: $model");
+      if (kDebugMode) {
+        print("Parsed model from response: $model");
+      }
       return model;
     } else {
-      print("Request failed with status: ${response.statusCode}");
+      if (kDebugMode) {
+        print("Request failed with status: ${response.statusCode}");
+      }
       throw Exception('Request failed with status: ${response.statusCode}');
     }
   }

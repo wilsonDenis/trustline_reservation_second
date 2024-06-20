@@ -13,7 +13,7 @@ class _SplashScreengState extends State<SplashScreen> {
   void initState() {
     super.initState();
     // Naviguer automatiquement vers l'écran de connexion après quelques secondes
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 2), () {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => const LoginScreen()),
         (route) => false,
@@ -37,7 +37,7 @@ class _SplashScreengState extends State<SplashScreen> {
               ),
               SizedBox(height: 20), // Ajoute un espace entre l'icône et le texte
               Text(
-                'SeatSmart',
+                'TrustLine',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
