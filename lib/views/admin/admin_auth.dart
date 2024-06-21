@@ -12,7 +12,7 @@ class AdminAuth extends StatefulWidget {
 
 class _AdminAuthState extends State<AdminAuth> {
   final List<TextEditingController> _controllers =
-      List.generate(4, (_) => TextEditingController());
+      List.generate(8, (_) => TextEditingController());
 
   @override
   Widget build(BuildContext context) {
@@ -48,22 +48,7 @@ class _AdminAuthState extends State<AdminAuth> {
                   14.0, // Ajustez cette valeur pour réduire l'espacement
             ),
             const SizedBox(height: 10.0),
-            // Container(
-            //   width: double.infinity,
-            //   alignment: Alignment.centerRight,
-            //   child: TextButton(
-            //     onPressed: () {
-            //       // Ajoutez la fonctionnalité de renvoi de code
-            //     },
-            //     child: const Text(
-            //       'Renvoyer le code (0)',
-            //       style: TextStyle(
-            //         color: Colors.black54,
-            //       ),
-            //       textAlign: TextAlign.left,
-            //     ),
-            //   ),
-            // ),
+         
             const SizedBox(height: 40.0),
             RectangleButton(
               onPressed: () => Navigator.pushNamed(context, '/configurationhotel'),

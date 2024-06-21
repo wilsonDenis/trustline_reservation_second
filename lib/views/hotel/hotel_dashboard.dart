@@ -4,8 +4,9 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:badges/badges.dart' as badges;
-import 'package:trust_reservation_second/views/admin/admin_auth.dart';
 import 'package:trust_reservation_second/views/hotel/create_reservation.dart';
+import 'package:trust_reservation_second/views/hotel/history_reservation.dart';
+import 'package:trust_reservation_second/views/hotel/info_hotel_page.dart';
 import 'package:trust_reservation_second/widgets/custom_container.dart';
 import 'package:trust_reservation_second/views/hotel/hotel_notifications_page.dart';
 
@@ -43,22 +44,24 @@ class _HotelDashboardState extends State<HotelDashboard> {
         'count': 298,
         'icon': Icons.hotel_outlined,
         'color': Colors.orange,
-        // 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ConfigurationHotel())),
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const AdminAuth())),
+        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const InfoHotel())),
+        // 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const HistoryReservations())),
       },
       {
         'title': 'History Reservations',
         'count': 54,
         'icon': Icons.history_toggle_off,
         'color': Colors.blue,
-        'onTap': () {}, // Navigation action here
+        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const HistoryReservations())),
+
       },
       {
         'title': 'Notifications',
         'count': 48,
         'icon': Icons.notifications_outlined,
         'color': Colors.green,
-        'onTap': () {}, // Navigation action here
+        'onTap': (){}
+
       },
     ];
 

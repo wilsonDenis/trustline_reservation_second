@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,8 +39,8 @@ class LoginScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    const BoxShadow(
+                  boxShadow: const [
+                    BoxShadow(
                       color: Colors.black26,
                       blurRadius: 10,
                       offset: Offset(0, 10),
@@ -49,11 +51,11 @@ class LoginScreen extends StatelessWidget {
                   children: <Widget>[
                     ElevatedButton(
                       onPressed: () {},
-                      child: const Text('Create Account'),
 
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size(double.infinity, 50),
                       ),
+                      child: const Text('Create Account'),
                     ),
                      const SizedBox(height: 20),
                     const Text(
@@ -63,11 +65,11 @@ class LoginScreen extends StatelessWidget {
 
                                   ElevatedButton(
                       onPressed: () {},
-                      child: const Text('Create Account'),
 
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size(double.infinity, 50),
                       ),
+                      child: const Text('Create Account'),
                     ),
                    
                     
