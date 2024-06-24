@@ -14,8 +14,8 @@ class CustomContainer extends StatelessWidget {
     required this.count,
     required this.color,
     required this.onTap,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +50,7 @@ class CustomContainer extends StatelessWidget {
                 children: [
                   Text(
                     count.toString(),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
@@ -59,7 +59,7 @@ class CustomContainer extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     title,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       color: Colors.grey,
                     ),

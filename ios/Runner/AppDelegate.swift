@@ -1,5 +1,7 @@
 import Flutter
 import UIKit
+import flutter_local_notifications
+
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
@@ -7,6 +9,10 @@ import UIKit
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
+    //ligne ajoutée 
+     FlutterLocalNotificationsPlugin.setPluginRegistrantCallback { (registry) in
+     GeneratedPluginRegistrant.register(with: registry)
+    }
     GeneratedPluginRegistrant.register(with: self)
 
     //  LIGNE AJOUTE POUR LES NOTIFICATIONS

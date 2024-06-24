@@ -13,6 +13,7 @@ class CustomTextFormField extends StatefulWidget {
   final IconData? suffixIcon; // Icône suffixe optionnelle
   final Color? prefixIconColor; // Couleur de l'icône préfixe
   final Color? suffixIconColor; // Couleur de l'icône suffixe
+  
 
   const CustomTextFormField({
     super.key,
@@ -27,7 +28,7 @@ class CustomTextFormField extends StatefulWidget {
     this.suffixIconColor,
     this.readOnly = false,
     this.borderColor = Colors.grey, // Valeur par défaut de la couleur de la bordure
-    this.borderWidth = 1.0,
+    this.borderWidth = 1.0, required bool obscureText,
   });
 
   @override
@@ -40,6 +41,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      
       controller: widget.controller,
       obscureText: _obscureText,
       keyboardType: widget.keyboardType,

@@ -26,7 +26,7 @@ class LoginScreen extends StatelessWidget {
               const SizedBox(height: 10),
               const Text(
                 'SeatSmart',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,

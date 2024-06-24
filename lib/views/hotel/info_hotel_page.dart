@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:trust_reservation_second/constants/colors_app.dart';
-import 'package:trust_reservation_second/views/hotel/configuration_hotel.dart';
+import 'package:trust_reservation_second/views/admin/admin_auth.dart';
 import 'package:trust_reservation_second/views/hotel/listes_receptionnists.dart';
 import 'package:trust_reservation_second/widgets/rectangle_button.dart';
 
@@ -97,7 +97,7 @@ class InfoHotel extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       RectangleButton(
-                        onPressed : () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ConfigurationHotel())),
+                        onPressed : () => Navigator.push(context, MaterialPageRoute(builder: (context) => const AdminAuth())),
                         buttonText: 'Configure',
                         buttonColor: ColorsApp.primaryColor,
                         textColor: Colors.white,

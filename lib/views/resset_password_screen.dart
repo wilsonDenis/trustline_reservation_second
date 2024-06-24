@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:trust_reservation_second/constants/colors_app.dart';
 import 'package:trust_reservation_second/widgets/custom_text_form_field.dart';
@@ -172,7 +171,7 @@ void _showErrorDialog(BuildContext context, String errorMessage) {
                             validator: (value) =>
                                 value!.isEmpty ? 'Email is required' : null,
                             controller: txtEmail,
-                            readOnly: true, // Transformer en champ de lecture seule
+                            readOnly: true, obscureText: false, // Transformer en champ de lecture seule
                           ),
                           const SizedBox(height: 20),
                           CustomTextFormField(
@@ -182,7 +181,7 @@ void _showErrorDialog(BuildContext context, String errorMessage) {
                             // showSuffixIcon: true,
                             validator: (value) =>
                                 value!.isEmpty ? 'Password is required' : null,
-                            controller: txtPassword,
+                            controller: txtPassword, obscureText: false,
                           ),
                           const SizedBox(height: 20),
                           CustomTextFormField(
@@ -192,7 +191,7 @@ void _showErrorDialog(BuildContext context, String errorMessage) {
                             // showSuffixIcon: true,
                             validator: (value) =>
                                 value!.isEmpty ? 'Password confirmation is required' : null,
-                            controller: txtConfirmPassword,
+                            controller: txtConfirmPassword, obscureText: false,
                           ),
                           const SizedBox(height: 20),
                           RectangleButton(

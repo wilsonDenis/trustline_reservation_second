@@ -1,9 +1,13 @@
+import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:trust_reservation_second/services/location_service.dart';
 import 'package:trust_reservation_second/widgets/custom_button.dart';
 import 'package:trust_reservation_second/widgets/custom_text_form_field.dart';
-import 'package:trust_reservation_second/services/location_service.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 
 class ConfigurationHotel extends StatefulWidget {
   const ConfigurationHotel({super.key});
@@ -18,6 +22,7 @@ class _ConfigurationHotelState extends State<ConfigurationHotel> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _websiteController = TextEditingController();
+  String? _selectedImagePath;
   List<String> _addressSuggestions = [];
 
   @override
@@ -45,10 +50,48 @@ class _ConfigurationHotelState extends State<ConfigurationHotel> {
     prefs.setString('hotel_address', _addressController.text);
     prefs.setString('hotel_email', _emailController.text);
     prefs.setString('hotel_website', _websiteController.text);
+    if (_selectedImagePath != null) {
+      prefs.setString('hotel_image', _selectedImagePath!);
+    }
   }
 
   Future<void> _loadAddressSuggestions() async {
     _addressSuggestions = (await LocationService.getSuggestions("")).cast<String>();
+  }
+
+  Future<void> _selectImage() async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImagePath = pickedFile.path;
+      });
+    }
+  }
+
+  Future<void> _uploadImage() async {
+    if (_selectedImagePath == null) return;
+
+    File imageFile = File(_selectedImagePath!);
+    String base64Image = base64Encode(imageFile.readAsBytesSync());
+    String fileName = imageFile.path.split("/").last;
+
+    var response = await http.post(
+      Uri.parse("YOUR_API_ENDPOINT"),
+      body: {
+        "image": base64Image,
+        "name": fileName,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Image uploadée avec succès')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Échec du téléchargement de l\'image')),
+      );
+    }
   }
 
   @override
@@ -105,7 +148,7 @@ class _ConfigurationHotelState extends State<ConfigurationHotel> {
                             return 'Veuillez entrer le nom de l\'hôtel';
                           }
                           return null;
-                        },
+                        }, obscureText: false,
                       ),
                       const SizedBox(height: 16),
                       CustomTextFormField(
@@ -119,7 +162,7 @@ class _ConfigurationHotelState extends State<ConfigurationHotel> {
                             return 'Veuillez entrer le numéro de téléphone';
                           }
                           return null;
-                        },
+                        }, obscureText: false,
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String>(
@@ -138,7 +181,7 @@ class _ConfigurationHotelState extends State<ConfigurationHotel> {
                         decoration: InputDecoration(
                           labelText: 'Adresse',
                           hintText: 'Entrez l\'adresse',
-                          prefixIcon:  Icon(Icons.location_on),
+                          prefixIcon: const Icon(Icons.location_on),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -158,7 +201,7 @@ class _ConfigurationHotelState extends State<ConfigurationHotel> {
                             return 'Veuillez entrer un email valide';
                           }
                           return null;
-                        },
+                        }, obscureText: false,
                       ),
                       const SizedBox(height: 16),
                       CustomTextFormField(
@@ -174,17 +217,33 @@ class _ConfigurationHotelState extends State<ConfigurationHotel> {
                             }
                           }
                           return null;
-                        },
+                        }, obscureText: false,
+                      ),
+                      const SizedBox(height: 16),
+                      GestureDetector(
+                        onTap: _selectImage,
+                        child: AbsorbPointer(
+                          child: CustomTextFormField(
+                            controller: TextEditingController(text: _selectedImagePath != null ? "Image sélectionnée" : ""),
+                            labelText: 'Image',
+                            hintText: 'Choisissez une image',
+                            // ignore: avoid_types_as_parameter_names, non_constant_identifier_names
+                            prefixIcon: Icons.image, validator: (String) {
+                              return null;
+                              }, obscureText: false,
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 24),
                       Center(
                         child: CustomButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if (_nameController.text.isNotEmpty &&
                                 _phoneController.text.isNotEmpty &&
                                 _addressController.text.isNotEmpty &&
                                 _emailController.text.isNotEmpty) {
-                              _saveHotelDetails();
+                              await _saveHotelDetails();
+                              await _uploadImage();
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('Détails de l\'hôtel enregistrés avec succès'),

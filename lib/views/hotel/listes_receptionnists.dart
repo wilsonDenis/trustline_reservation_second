@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:trust_reservation_second/views/admin/gerant_recept_auth.dart';
+import 'package:trust_reservation_second/views/hotel/add_receptionist_screen.dart';
 
 class ListesReceptionnists extends StatelessWidget {
   final List<Map<String, dynamic>> receptionists = [
@@ -14,12 +16,12 @@ class ListesReceptionnists extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          leading: IconButton(
-    icon:const  Icon(Icons.arrow_back_ios_sharp, color: Colors.black), // Icune de retour personnalisée
-    onPressed: () {
-      Navigator.pop(context); // Retourne à la page précédente
-    },
-  ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_sharp, color: Colors.black), // Icune de retour personnalisée
+          onPressed: () {
+            Navigator.pop(context); // Retourne à la page précédente
+          },
+        ),
         centerTitle: true,
         title: const Text('Receptionists'),
       ),
@@ -46,6 +48,15 @@ class ListesReceptionnists extends StatelessWidget {
           );
         },
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const GerantReceptAuth()),
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 
@@ -54,11 +65,11 @@ class ListesReceptionnists extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title:const  Text('Options'),
+          title: const Text('Options'),
           content: Text('Choose an action for ${receptionist['name']}'),
           actions: [
             TextButton(
-              child:const  Text('Modify'),
+              child: const Text('Modify'),
               onPressed: () {
                 Navigator.of(context).pop();
                 Navigator.pushNamed(context, '/edit_receptionist', arguments: receptionist);

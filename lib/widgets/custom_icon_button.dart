@@ -6,7 +6,7 @@ class CustomIconButton extends StatelessWidget {
   final Color color;
   final VoidCallback onPressed;
 
-  CustomIconButton({
+  const CustomIconButton({super.key, 
     required this.icon,
     required this.label,
     required this.color,
@@ -18,7 +18,7 @@ class CustomIconButton extends StatelessWidget {
     return Column(
       children: [
         Container(
-          margin: EdgeInsets.all(8.0),
+          margin: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
             color: Colors.white,
             shape: BoxShape.circle,
@@ -27,7 +27,7 @@ class CustomIconButton extends StatelessWidget {
                 color: Colors.grey.withOpacity(0.5),
                 spreadRadius: 2,
                 blurRadius: 5,
-                offset: Offset(0, 3),
+                offset: const Offset(0, 3),
               ),
             ],
           ),

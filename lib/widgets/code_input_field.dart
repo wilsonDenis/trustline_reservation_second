@@ -10,7 +10,7 @@ class CodeInputField extends StatelessWidget {
   final TextStyle textStyle;
   final double fieldSpacing; // Nouvelle propriété pour l'espacement des champs
 
-  CodeInputField({
+  const CodeInputField({super.key, 
     required this.controllers,
     this.numberOfFields = 4,
     this.fieldWidth = 60.0,
