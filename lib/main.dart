@@ -6,6 +6,7 @@ import 'package:trust_reservation_second/services/notification_service.dart';
 import 'package:trust_reservation_second/views/admin/admin_auth.dart';
 import 'package:trust_reservation_second/views/auth_screen.dart';
 import 'package:trust_reservation_second/views/hotel/add_receptionist_screen.dart';
+import 'package:trust_reservation_second/views/hotel/create_reservation.dart';
 import 'package:trust_reservation_second/views/hotel/hotel_dashboard.dart';
 import 'package:trust_reservation_second/views/login_screen.dart';
 import 'package:trust_reservation_second/views/resset_password_screen.dart';
@@ -63,6 +64,7 @@ class MyApp extends StatelessWidget {
         '/adminauth': (context) => const AdminAuth(),
         '/configurationhotel': (context) => const ConfigurationHotel(),
         '/addreceptionistscreen': (context) => const AddReceptionistScreen(),
+        '/createreservation': (context) => const CreateReservation(),
       },
     );
   }

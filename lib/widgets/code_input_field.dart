@@ -8,9 +8,10 @@ class CodeInputField extends StatelessWidget {
   final double borderRadius;
   final Color backgroundColor;
   final TextStyle textStyle;
-  final double fieldSpacing; // Nouvelle propriété pour l'espacement des champs
+  final double fieldSpacing;
 
-  const CodeInputField({super.key, 
+  const CodeInputField({
+    Key? key,
     required this.controllers,
     this.numberOfFields = 4,
     this.fieldWidth = 60.0,
@@ -18,8 +19,8 @@ class CodeInputField extends StatelessWidget {
     this.borderRadius = 5.0,
     this.backgroundColor = Colors.grey,
     this.textStyle = const TextStyle(fontSize: 24.0),
-    this.fieldSpacing = 8.0, // Valeur par défaut pour l'espacement
-  });
+    this.fieldSpacing = 8.0,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +49,7 @@ class CodeInputField extends StatelessWidget {
             ),
           );
         } else {
-          return SizedBox(width: fieldSpacing); // Espacement entre les champs
+          return SizedBox(width: fieldSpacing);
         }
       }),
     );

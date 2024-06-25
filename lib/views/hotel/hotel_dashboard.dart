@@ -4,9 +4,11 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:trust_reservation_second/views/admin/auth_receptionnist.dart';
 import 'package:trust_reservation_second/views/hotel/create_reservation.dart';
 import 'package:trust_reservation_second/views/hotel/history_reservation.dart';
 import 'package:trust_reservation_second/views/hotel/info_hotel_page.dart';
+import 'package:trust_reservation_second/views/hotel/invoice_details_screen.dart';
 import 'package:trust_reservation_second/widgets/custom_container.dart';
 import 'package:trust_reservation_second/views/hotel/hotel_notifications_page.dart';
 
@@ -36,7 +38,7 @@ class _HotelDashboardState extends State<HotelDashboard> {
         'count': 0,
         'icon': Icons.add,
         'color': Colors.pink,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateReservation())),
+        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const AuthReceptionnist())),
 
       },
       {
@@ -56,11 +58,12 @@ class _HotelDashboardState extends State<HotelDashboard> {
 
       },
       {
-        'title': 'Notifications',
+        'title': 'Invoices',
         'count': 48,
-        'icon': Icons.notifications_outlined,
-        'color': Colors.green,
-        'onTap': (){}
+        'icon': Icons.inventory_outlined,
+        'color': Colors.green,//InvoiceDetailsScreen
+        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const InvoiceDetailsScreen())),
+
 
       },
     ];

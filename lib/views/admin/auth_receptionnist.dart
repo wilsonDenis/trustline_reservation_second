@@ -3,14 +3,14 @@ import 'package:trust_reservation_second/constants/colors_app.dart';
 import 'package:trust_reservation_second/widgets/rectangle_button.dart';
 import '../../widgets/code_input_field.dart';
 
-class AdminAuth extends StatefulWidget {
-  const AdminAuth({Key? key}) : super(key: key);
+class AuthReceptionnist extends StatefulWidget {
+  const AuthReceptionnist({Key? key}) : super(key: key);
 
   @override
-  _AdminAuthState createState() => _AdminAuthState();
+  _AuthReceptionnistState createState() => _AuthReceptionnistState();
 }
 
-class _AdminAuthState extends State<AdminAuth> {
+class _AuthReceptionnistState extends State<AuthReceptionnist> {
   final int numberOfFields = 8; // Changez ce nombre pour augmenter ou diminuer le nombre de champs
   late final List<TextEditingController> _controllers;
 
@@ -59,7 +59,7 @@ class _AdminAuthState extends State<AdminAuth> {
                 ),
                 const SizedBox(height: 40.0),
                 RectangleButton(
-                  onPressed: () => Navigator.pushNamed(context, '/configurationhotel'),
+                  onPressed: () => Navigator.pushNamed(context, '/createreservation'),
                   buttonText: "Done",
                   buttonColor: ColorsApp.primaryColor,
                   textColor: Colors.white,
