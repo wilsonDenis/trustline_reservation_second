@@ -154,7 +154,7 @@ class _AddReceptionistScreenState extends State<AddReceptionistScreen> {
                               await _sendDetailsToAPI();
                             }
                           },
-                          text: 'Add Receptionist',
+                          text: 'Add Receptionist', 
                         ),
                       ),
                     ],

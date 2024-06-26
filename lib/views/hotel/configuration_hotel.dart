@@ -214,7 +214,7 @@ class _ConfigurationHotelState extends State<ConfigurationHotel> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 180),
               Center(
                 child: CustomButton(
                   onPressed: () async {

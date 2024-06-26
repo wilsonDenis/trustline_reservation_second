@@ -5,6 +5,7 @@ import 'package:trust_reservation_second/constants/colors_app.dart';
 class FactureDetailsScreen extends StatelessWidget {
   final Map<String, String> reservation;
 
+  // ignore: use_super_parameters
   const FactureDetailsScreen({Key? key, required this.reservation}) : super(key: key);
 
   @override

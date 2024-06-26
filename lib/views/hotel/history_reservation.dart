@@ -112,6 +112,16 @@ class _HistoryReservationsState extends State<HistoryReservations> {
     );
   }
 
+  void _toggleSelection(int index) {
+    setState(() {
+      if (_selectedReservations.contains(index)) {
+        _selectedReservations.remove(index);
+      } else {
+        _selectedReservations.add(index);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -162,15 +172,11 @@ class _HistoryReservationsState extends State<HistoryReservations> {
                     ? const Icon(CupertinoIcons.check_mark_circled_solid, color: CupertinoColors.systemBlue)
                     : const Icon(CupertinoIcons.circle),
                 onTap: () {
-                  setState(() {
-                    if (isSelected) {
-                      _selectedReservations.remove(index);
-                    } else {
-                      _selectedReservations.add(index);
-                    }
-                  });
+                  _showInvoiceOptions(context, reservation);
                 },
-                onLongPress: () => _showInvoiceOptions(context, reservation),
+                onLongPress: () {
+                  _toggleSelection(index);
+                },
               ),
             );
           },

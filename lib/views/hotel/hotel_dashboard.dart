@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:trust_reservation_second/views/admin/admin_auth.dart';
 import 'package:trust_reservation_second/views/admin/auth_receptionnist.dart';
 import 'package:trust_reservation_second/views/hotel/create_reservation.dart';
 import 'package:trust_reservation_second/views/hotel/history_reservation.dart';
@@ -46,7 +47,7 @@ class _HotelDashboardState extends State<HotelDashboard> {
         'count': 298,
         'icon': Icons.hotel_outlined,
         'color': Colors.orange,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const InfoHotel())),
+        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const AdminAuth())),
         // 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const HistoryReservations())),
       },
       {

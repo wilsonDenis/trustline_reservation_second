@@ -8,6 +8,7 @@ import 'package:trust_reservation_second/views/auth_screen.dart';
 import 'package:trust_reservation_second/views/hotel/add_receptionist_screen.dart';
 import 'package:trust_reservation_second/views/hotel/create_reservation.dart';
 import 'package:trust_reservation_second/views/hotel/hotel_dashboard.dart';
+import 'package:trust_reservation_second/views/hotel/info_hotel_page.dart';
 import 'package:trust_reservation_second/views/login_screen.dart';
 import 'package:trust_reservation_second/views/resset_password_screen.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
       title: 'Hotel Management',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        
       ).copyWith(
         pageTransitionsTheme: const PageTransitionsTheme(
           builders: <TargetPlatform, PageTransitionsBuilder>{
@@ -65,6 +67,7 @@ class MyApp extends StatelessWidget {
         '/configurationhotel': (context) => const ConfigurationHotel(),
         '/addreceptionistscreen': (context) => const AddReceptionistScreen(),
         '/createreservation': (context) => const CreateReservation(),
+        '/infohotel': (context) => const InfoHotel(),
       },
     );
   }

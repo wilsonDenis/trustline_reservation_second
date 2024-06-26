@@ -11,7 +11,7 @@ class AdminAuth extends StatefulWidget {
 }
 
 class _AdminAuthState extends State<AdminAuth> {
-  final int numberOfFields = 8; // Changez ce nombre pour augmenter ou diminuer le nombre de champs
+  final int numberOfFields = 5; // Changez ce nombre pour augmenter ou diminuer le nombre de champs
   late final List<TextEditingController> _controllers;
 
   @override
@@ -59,7 +59,7 @@ class _AdminAuthState extends State<AdminAuth> {
                 ),
                 const SizedBox(height: 40.0),
                 RectangleButton(
-                  onPressed: () => Navigator.pushNamed(context, '/configurationhotel'),
+                  onPressed: () => Navigator.pushNamed(context, '/infohotel'),
                   buttonText: "Done",
                   buttonColor: ColorsApp.primaryColor,
                   textColor: Colors.white,
