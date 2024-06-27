@@ -55,6 +55,7 @@ dependencies:
   # flutter_google_places: ^0.3.0
   # google_maps_webservice: ^0.0.19
   geolocator: ^12.0.0
+  animated_floating_buttons: ^0.0.2
   flutter_localizations:
     sdk: flutter
   image_picker: ^1.1.2
@@ -86,6 +87,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
   - assets/
+  
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

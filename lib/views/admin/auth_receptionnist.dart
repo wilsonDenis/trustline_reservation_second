@@ -11,7 +11,7 @@ class AuthReceptionnist extends StatefulWidget {
 }
 
 class _AuthReceptionnistState extends State<AuthReceptionnist> {
-  final int numberOfFields = 5; // Changez ce nombre pour augmenter ou diminuer le nombre de champs
+  final int numberOfFields = 4; // Changez ce nombre pour augmenter ou diminuer le nombre de champs
   late final List<TextEditingController> _controllers;
 
   @override

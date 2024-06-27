@@ -1,19 +1,60 @@
+import 'dart:ui';
+import 'package:animated_floating_buttons/animated_floating_buttons.dart';
 import 'package:flutter/material.dart';
+import 'package:trust_reservation_second/constants/colors_app.dart';
 
-class InvoiceDetailsScreen extends StatelessWidget {
-  const InvoiceDetailsScreen({super.key});
+class ReservationDetailsScreen extends StatelessWidget {
+  final Map<String, String> reservation;
+
+  const ReservationDetailsScreen({super.key, required this.reservation});
 
   static const Color primaryColor = Color.fromARGB(255, 0, 26, 51);
 
-  // static const Color backgroundColor = Color(0xFFe6f0f6);
-
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<AnimatedFloatingActionButtonState> fabKey = GlobalKey<AnimatedFloatingActionButtonState>();
+
+    Widget editButton() {
+      return FloatingActionButton(
+        onPressed: () {
+          // Handle modification
+        },
+        heroTag: "edit",
+        tooltip: 'Edit',
+        child: Icon(Icons.edit,color: Colors.white,),
+        backgroundColor: ColorsApp.primaryColor,
+      );
+    }
+
+    Widget deleteButton() {
+      return FloatingActionButton(
+        onPressed: () {
+          // Handle deletion
+        },
+        heroTag: "delete",
+        tooltip: 'Delete',
+        child: Icon(Icons.delete, color: Colors.white,),
+        backgroundColor: ColorsApp.primaryColor,
+      );
+    }
+
+    Widget shareButton() {
+      return FloatingActionButton(
+        onPressed: () {
+          // Handle sharing
+        },
+        heroTag: "share",
+        tooltip: 'Share',
+        child: Icon(Icons.share,color: Colors.white),
+        backgroundColor: ColorsApp.primaryColor,
+      );
+    }
+
     return Scaffold(
       backgroundColor: Color.fromARGB(226, 255, 255, 255),
       appBar: AppBar(
         backgroundColor: primaryColor,
-        title: const Text('Invoice Details'),
+        title: const Text('Reservation Details'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -38,7 +79,7 @@ class InvoiceDetailsScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Garuda Indonesia',
+                    'Ma Reservation',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 24,
@@ -46,14 +87,14 @@ class InvoiceDetailsScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 5),
-                  Text(
-                    'A4-123',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                  // Text(
+                  //   'A4-123',
+                  //   style: TextStyle(
+                  //     color: Colors.white,
+                  //     fontSize: 20,
+                  //     fontWeight: FontWeight.w500,
+                  //   ),
+                  // ),
                 ],
               ),
             ),
@@ -84,7 +125,7 @@ class InvoiceDetailsScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'TRUSTLINE',
+                              'DPS',
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
@@ -148,7 +189,7 @@ class InvoiceDetailsScreen extends StatelessWidget {
                         Text('Wilson Denis', style: TextStyle(fontSize: 18)),
                         Text('25 Dec 2024', style: TextStyle(fontSize: 18)),
                       ],
-                    ), 
+                    ),
                     const SizedBox(height: 20),
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -181,38 +222,6 @@ class InvoiceDetailsScreen extends StatelessWidget {
                         Text('Business', style: TextStyle(fontSize: 18)),
                       ],
                     ),
-                    const SizedBox(height: 20),
-                    Divider(color: Colors.grey[300]),
-                    const SizedBox(height: 10),
-                    const Text(
-                      'Invoice Details:',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 10),
-                    const Text('Item 1: \$100.00', style: TextStyle(fontSize: 18)),
-                    const Text('Item 2: \$150.00', style: TextStyle(fontSize: 18)),
-                    const Text('Item 3: \$200.00', style: TextStyle(fontSize: 18)),
-                    const Text('Item 4: \$50.00', style: TextStyle(fontSize: 18)),
-                    const SizedBox(height: 20),
-                    Divider(color: Colors.grey[300]),
-                    const SizedBox(height: 10),
-                    const SizedBox(height: 20),
-                    Center(
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: primaryColor,
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ), 
-                        ),
-                        child: const Text(
-                          'Download',
-                          style: TextStyle(fontSize: 16, color:Colors.white),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -220,6 +229,46 @@ class InvoiceDetailsScreen extends StatelessWidget {
           ],
         ),
       ),
+      floatingActionButton: AnimatedFloatingActionButton(
+        fabButtons: <Widget>[
+          editButton(),
+          deleteButton(),
+          shareButton(),
+        ],
+        key: fabKey,
+        colorStartAnimation: Colors.white,
+        colorEndAnimation: Colors.white,
+        animatedIconData: AnimatedIcons.menu_close,
+      ),
     );
   }
 }
+
+// class CustomIconButton extends StatelessWidget {
+//   final VoidCallback onPressed;
+//   final IconData icon;
+
+//   const CustomIconButton({
+//     Key? key,
+//     required this.onPressed,
+//     required this.icon,
+//   }) : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return ElevatedButton(
+//       onPressed: onPressed,
+//       style: ElevatedButton.styleFrom(
+//         backgroundColor: ColorsApp.primaryColor,
+//         shape: RoundedRectangleBorder(
+//           borderRadius: BorderRadius.circular(10.0),
+//         ),
+//         padding: const EdgeInsets.all(16.0),
+//       ),
+//       child: Icon(
+//         icon,
+//         color: Colors.white,
+//       ),
+//     );
+//   }
+// }

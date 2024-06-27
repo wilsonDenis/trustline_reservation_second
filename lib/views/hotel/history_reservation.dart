@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:trust_reservation_second/views/hotel/facture_details_screen.dart';
+import 'package:trust_reservation_second/constants/colors_app.dart';
+import 'package:trust_reservation_second/views/hotel/resevation_details_screen.dart';
 
 class HistoryReservations extends StatefulWidget {
-  const HistoryReservations({Key? key}) : super(key: key);
+  const HistoryReservations({super.key});
 
   @override
   State<HistoryReservations> createState() => _HistoryReservationsState();
@@ -34,48 +35,51 @@ class _HistoryReservationsState extends State<HistoryReservations> {
   final Set<int> _selectedReservations = {};
 
   void _showInvoiceOptions(BuildContext context, Map<String, String> reservation) {
-    showCupertinoModalPopup(
-      context: context,
-      builder: (context) {
-        return CupertinoActionSheet(
-          title: const Text('Options'),
-          actions: [
-            CupertinoActionSheetAction(
+    if (_selectedReservations.isEmpty) {
+      showCupertinoModalPopup(
+        context: context,
+        builder: (context) {
+          return CupertinoActionSheet(
+            title: const Text('Options'),
+            actions: [
+              CupertinoActionSheetAction(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                      builder: (context) => ReservationDetailsScreen(reservation: reservation),
+                    ),
+                  );
+                },
+                child: const Text('Voir Reservation'),
+              ),
+              CupertinoActionSheetAction(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  // Navigate to modification screen
+                },
+                child: const Text('Demander Facture'),
+              ),
+
+              // CupertinoActionSheetAction(
+              //   onPressed: () {
+              //     Navigator.of(context).pop();
+              //     // Handle cancellation
+              //   },
+              //   child: const Text('Cancel Reservation'),
+              // ),
+            ],
+            cancelButton: CupertinoActionSheetAction(
               onPressed: () {
                 Navigator.of(context).pop();
-                Navigator.push(
-                  context,
-                  CupertinoPageRoute(
-                    builder: (context) => FactureDetailsScreen(reservation: reservation),
-                  ),
-                );
               },
-              child: const Text('Facture'),
+              child: const Text('Cancel'),
             ),
-            CupertinoActionSheetAction(
-              onPressed: () {
-                Navigator.of(context).pop();
-                // Navigate to modification screen
-              },
-              child: const Text('Modify Reservation'),
-            ),
-            CupertinoActionSheetAction(
-              onPressed: () {
-                Navigator.of(context).pop();
-                // Handle cancellation
-              },
-              child: const Text('Cancel Reservation'),
-            ),
-          ],
-          cancelButton: CupertinoActionSheetAction(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text('Cancel'),
-          ),
-        );
-      },
-    );
+          );
+        },
+      );
+    }
   }
 
   void _showBulkInvoiceOptions(BuildContext context) {
@@ -99,7 +103,7 @@ class _HistoryReservationsState extends State<HistoryReservations> {
                   Navigator.push(
                     context,
                     CupertinoPageRoute(
-                      builder: (context) => FactureDetailsScreen(reservation: reservations[index]),
+                      builder: (context) => ReservationDetailsScreen(reservation: reservations[index]),
                     ),
                   );
                 }
@@ -119,6 +123,12 @@ class _HistoryReservationsState extends State<HistoryReservations> {
       } else {
         _selectedReservations.add(index);
       }
+    });
+  }
+
+  void _handleLongPress(int index) {
+    setState(() {
+      _selectedReservations.add(index);
     });
   }
 
@@ -149,13 +159,15 @@ class _HistoryReservationsState extends State<HistoryReservations> {
             final reservation = reservations[index];
             final isSelected = _selectedReservations.contains(index);
             return Card(
+              color: Color.fromARGB(213, 255, 255, 255),
+              // color: Color.fromARGB(255, 255, 255, 255),
               elevation: 5.0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
               margin: const EdgeInsets.symmetric(vertical: 8.0),
               child: CupertinoListTile(
-                leading: const Icon(CupertinoIcons.calendar, color: CupertinoColors.systemBlue),
+                leading: const Icon(CupertinoIcons.calendar, color: ColorsApp.primaryColor),
                 title: Text(
                   reservation['name']!,
                   style: const TextStyle(fontWeight: FontWeight.bold),
@@ -169,13 +181,17 @@ class _HistoryReservationsState extends State<HistoryReservations> {
                   ],
                 ),
                 trailing: isSelected
-                    ? const Icon(CupertinoIcons.check_mark_circled_solid, color: CupertinoColors.systemBlue)
+                    ? const Icon(CupertinoIcons.check_mark_circled_solid, color:Colors.green)
                     : const Icon(CupertinoIcons.circle),
                 onTap: () {
-                  _showInvoiceOptions(context, reservation);
+                  if (_selectedReservations.isEmpty) {
+                    _showInvoiceOptions(context, reservation);
+                  } else {
+                    _toggleSelection(index);
+                  }
                 },
                 onLongPress: () {
-                  _toggleSelection(index);
+                  _handleLongPress(index);
                 },
               ),
             );
@@ -195,14 +211,14 @@ class CupertinoListTile extends StatelessWidget {
   final VoidCallback onLongPress;
 
   const CupertinoListTile({
-    Key? key,
+    super.key,
     required this.leading,
     required this.title,
     required this.subtitle,
     required this.trailing,
     required this.onTap,
     required this.onLongPress,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -211,7 +227,7 @@ class CupertinoListTile extends StatelessWidget {
       onLongPress: onLongPress,
       child: Container(
         padding: const EdgeInsets.all(8.0),
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           border: Border(
             bottom: BorderSide(
               color: CupertinoColors.separator,

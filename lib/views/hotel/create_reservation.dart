@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trust_reservation_second/constants/colors_app.dart';
+import 'package:trust_reservation_second/views/hotel/contact_form.dart';
+import 'package:trust_reservation_second/views/hotel/payement_selection.dart';
+import 'package:trust_reservation_second/views/hotel/voiture_choice.dart';
 import 'package:trust_reservation_second/widgets/custom_button.dart';
 
 class CreateReservation extends StatefulWidget {
@@ -17,6 +20,11 @@ class _CreateReservationState extends State<CreateReservation> {
   TimeOfDay? _selectedTime;
   bool isDefaultAddress = true;
   int _currentStep = 0;
+
+  String _selectedVehicle = '';
+  String _name = '';
+  String _phone = '';
+  String _email = '';
 
   @override
   void initState() {
@@ -75,9 +83,43 @@ class _CreateReservationState extends State<CreateReservation> {
 
   void _continue() {
     if (_currentStep < 3) {
+      if (_currentStep == 2) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => VoitureChoice(onCarSelected: (car) {
+            setState(() {
+              _selectedVehicle = car;
+            });
+            Navigator.push(
+              context,
+             MaterialPageRoute(builder: (context) => ContactForm(onContactSubmitted: () {
+  setState(() {
+    _name = ""; // Assuming you want to set default values or handle them differently
+    _phone = "";
+    _email = "";
+  });
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => PaymentSelection(onPaymentCompleted: () {
       setState(() {
-        _currentStep += 1;
+        _currentStep = 3;
       });
+      Navigator.popUntil(context, (route) => route.isFirst);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const CreateReservation()),
+      );
+    })),
+  );
+})),
+            );
+          })),
+        );
+      } else {
+        setState(() {
+          _currentStep += 1;
+        });
+      }
     } else {
       // Handle form submission
     }
@@ -226,8 +268,14 @@ class _CreateReservationState extends State<CreateReservation> {
       const Center(
         child: Text('Informations supplémentaires...'),
       ),
-      const Center(
-        child: Text('Résumé et confirmation'),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Véhicule sélectionné: $_selectedVehicle'),
+          Text('Nom: $_name'),
+          Text('Téléphone: $_phone'),
+          Text('Email: $_email'),
+        ],
       ),
     ];
   }
@@ -242,8 +290,8 @@ class _CreateReservationState extends State<CreateReservation> {
               Center(
                 child: Container(
                   margin: const EdgeInsets.all(8.0),
-                  width: 24, // Set a fixed width for all steps
-                  height: 24, // Set a fixed height for all steps
+                  width: 24,
+                  height: 24,
                   decoration: BoxDecoration(
                     color: step == index ? ColorsApp.primaryColor : Colors.grey,
                     shape: BoxShape.circle,
@@ -259,10 +307,10 @@ class _CreateReservationState extends State<CreateReservation> {
                   ),
                 ),
               ),
-              if (index < 3) // Add a line between steps except the last one
+              if (index < 3)
                 Container(
                   height: 2,
-                  width: 65, // Increased width for more spacing
+                  width: 65,
                   color: Colors.grey,
                 ),
             ],
@@ -276,6 +324,7 @@ class _CreateReservationState extends State<CreateReservation> {
   Widget build(BuildContext context) {
     return Center(
       child: Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_sharp, color: Colors.black),
@@ -341,14 +390,13 @@ class _CreateReservationState extends State<CreateReservation> {
                             Expanded(
                               child: OutlinedButton(
                                 onPressed: _cancel,
-                                child: const Text('Annuler'),
                                 style: OutlinedButton.styleFrom(
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(6.0),
                                   ),
-                                  // You can adjust the minimum size if needed
-                                  minimumSize: const Size(50, 50), 
+                                  minimumSize: const Size(50, 50),
                                 ),
+                                child: const Text('Annuler'),
                               ),
                             ),
                           ],
