@@ -16,18 +16,21 @@ class InfoHotel extends StatelessWidget {
             children: [
               Image.asset(
                 'assets/hotel.jpg', // Utilisation de l'image depuis les assets
-                height: MediaQuery.of(context).size.height / 2, // Moitié de la hauteur de l'écran
+                height: MediaQuery.of(context).size.height /
+                    2, // Moitié de la hauteur de l'écran
                 width: double.infinity,
                 fit: BoxFit.cover,
               ),
               Container(
-                height: MediaQuery.of(context).size.height / 2, // Moitié de la hauteur de l'écran
+                height: MediaQuery.of(context).size.height /
+                    2, // Moitié de la hauteur de l'écran
                 color: Colors.grey[300], // Couleur de fond gris clair
               ),
             ],
           ),
           Positioned(
-            top: MediaQuery.of(context).size.height / 2 - 50, // Position du premier container pour qu'il soit sur l'image
+            top: MediaQuery.of(context).size.height / 2 -
+                50, // Position du premier container pour qu'il soit sur l'image
             left: 16,
             right: 16,
             child: Container(
@@ -68,13 +71,13 @@ class InfoHotel extends StatelessWidget {
                     style: TextStyle(fontSize: 16),
                   ),
                   const SizedBox(height: 1),
-          
                 ],
               ),
             ),
           ),
           Positioned(
-            top: MediaQuery.of(context).size.height - 250, // Position du deuxième container en bas, mais ne touche pas complètement le bas
+            top: MediaQuery.of(context).size.height -
+                250, // Position du deuxième container en bas, mais ne touche pas complètement le bas
             left: 16,
             right: 16,
             child: Container(
@@ -98,7 +101,11 @@ class InfoHotel extends StatelessWidget {
                     children: [
                       RectangleButton(
                         // onPressed : () => Navigator.push(context, MaterialPageRoute(builder: (context) => const AdminAuth())),
-                        onPressed : () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ConfigurationHotel())),
+                        onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const ConfigurationHotel())),
                         buttonText: '',
                         buttonColor: ColorsApp.primaryColor,
                         textColor: Colors.white,
@@ -107,7 +114,10 @@ class InfoHotel extends StatelessWidget {
                         iconColor: Colors.white,
                       ),
                       RectangleButton(
-                        onPressed : () => Navigator.push(context, MaterialPageRoute(builder: (context) => ListesReceptionnists())),
+                        onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ListesReceptionnists())),
                         buttonText: '',
                         buttonColor: ColorsApp.primaryColor,
                         textColor: Colors.white,

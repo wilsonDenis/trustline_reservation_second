@@ -16,4 +16,3 @@ class LocalStorageService {
     await prefs.remove(key);
   }
 }
-

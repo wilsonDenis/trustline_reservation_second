@@ -3,6 +3,7 @@ import 'package:trust_reservation_second/constants/colors_app.dart';
 import 'package:trust_reservation_second/widgets/rectangle_button.dart';
 
 import '../../widgets/code_input_field.dart';
+
 class GerantReceptAuth extends StatefulWidget {
   const GerantReceptAuth({super.key});
   @override
@@ -48,10 +49,10 @@ class _GerantReceptAuthState extends State<GerantReceptAuth> {
                   14.0, // Ajustez cette valeur pour réduire l'espacement
             ),
             const SizedBox(height: 10.0),
-         
             const SizedBox(height: 40.0),
             RectangleButton(
-              onPressed: () => Navigator.pushNamed(context, '/addreceptionistscreen'),
+              onPressed: () =>
+                  Navigator.pushNamed(context, '/addreceptionistscreen'),
               buttonText: "Done",
               buttonColor: ColorsApp.primaryColor,
               textColor: Colors.white,

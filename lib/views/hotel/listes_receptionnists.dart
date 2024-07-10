@@ -66,10 +66,14 @@ class ListesReceptionnists extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  CupertinoPageRoute(builder: (context) => const GerantReceptAuth()),
+                  CupertinoPageRoute(
+                      builder: (context) => const GerantReceptAuth()),
                 );
               },
-              child: const Icon(Icons.add,color: Colors.white,),
+              child: const Icon(
+                Icons.add,
+                color: Colors.white,
+              ),
             ),
           ),
         ],
@@ -77,7 +81,8 @@ class ListesReceptionnists extends StatelessWidget {
     );
   }
 
-  void _showOptionsDialog(BuildContext context, Map<String, dynamic> receptionist) {
+  void _showOptionsDialog(
+      BuildContext context, Map<String, dynamic> receptionist) {
     showCupertinoDialog(
       context: context,
       builder: (context) {
@@ -89,7 +94,8 @@ class ListesReceptionnists extends StatelessWidget {
               child: const Text('Modify'),
               onPressed: () {
                 Navigator.of(context).pop();
-                Navigator.pushNamed(context, '/edit_receptionist', arguments: receptionist);
+                Navigator.pushNamed(context, '/edit_receptionist',
+                    arguments: receptionist);
               },
             ),
             CupertinoDialogAction(
@@ -105,13 +111,15 @@ class ListesReceptionnists extends StatelessWidget {
     );
   }
 
-  void _showDeleteConfirmationDialog(BuildContext context, Map<String, dynamic> receptionist) {
+  void _showDeleteConfirmationDialog(
+      BuildContext context, Map<String, dynamic> receptionist) {
     showCupertinoDialog(
       context: context,
       builder: (context) {
         return CupertinoAlertDialog(
           title: const Text('Delete Confirmation'),
-          content: Text('Are you sure you want to delete ${receptionist['name']}?'),
+          content:
+              Text('Are you sure you want to delete ${receptionist['name']}?'),
           actions: [
             CupertinoDialogAction(
               child: const Text('Cancel'),

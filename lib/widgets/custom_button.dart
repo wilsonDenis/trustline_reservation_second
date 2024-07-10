@@ -10,7 +10,7 @@ class CustomButton extends StatelessWidget {
     Key? key,
     required this.text,
     required this.onPressed,
-    this.isOutlined = false,
+    this.isOutlined = false, required MaterialColor backgroundColor,
   }) : super(key: key);
 
   @override
@@ -73,7 +73,7 @@ class CustomButton extends StatelessWidget {
 //           textStyle: const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
 //           shape: RoundedRectangleBorder(
 //             borderRadius: BorderRadius.circular(6.0),
-            
+
 //           ),
 //           minimumSize: const Size(double.infinity, 50),
 //         ),

@@ -60,7 +60,8 @@ class InvoiceDetailsScreen extends StatelessWidget {
             Align(
               alignment: Alignment.center,
               child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 40.0),
+                margin: const EdgeInsets.symmetric(
+                    horizontal: 16.0, vertical: 40.0),
                 padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -137,8 +138,10 @@ class InvoiceDetailsScreen extends StatelessWidget {
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Passenger Name', style: TextStyle(color: Colors.grey)),
-                        Text('Flight Date', style: TextStyle(color: Colors.grey)),
+                        Text('Passenger Name',
+                            style: TextStyle(color: Colors.grey)),
+                        Text('Flight Date',
+                            style: TextStyle(color: Colors.grey)),
                       ],
                     ),
                     const SizedBox(height: 5),
@@ -148,7 +151,7 @@ class InvoiceDetailsScreen extends StatelessWidget {
                         Text('Wilson Denis', style: TextStyle(fontSize: 18)),
                         Text('25 Dec 2024', style: TextStyle(fontSize: 18)),
                       ],
-                    ), 
+                    ),
                     const SizedBox(height: 20),
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -186,13 +189,18 @@ class InvoiceDetailsScreen extends StatelessWidget {
                     const SizedBox(height: 10),
                     const Text(
                       'Invoice Details:',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 10),
-                    const Text('Item 1: \$100.00', style: TextStyle(fontSize: 18)),
-                    const Text('Item 2: \$150.00', style: TextStyle(fontSize: 18)),
-                    const Text('Item 3: \$200.00', style: TextStyle(fontSize: 18)),
-                    const Text('Item 4: \$50.00', style: TextStyle(fontSize: 18)),
+                    const Text('Item 1: \$100.00',
+                        style: TextStyle(fontSize: 18)),
+                    const Text('Item 2: \$150.00',
+                        style: TextStyle(fontSize: 18)),
+                    const Text('Item 3: \$200.00',
+                        style: TextStyle(fontSize: 18)),
+                    const Text('Item 4: \$50.00',
+                        style: TextStyle(fontSize: 18)),
                     const SizedBox(height: 20),
                     Divider(color: Colors.grey[300]),
                     const SizedBox(height: 10),
@@ -202,14 +210,15 @@ class InvoiceDetailsScreen extends StatelessWidget {
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primaryColor,
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
-                          ), 
+                          ),
                         ),
                         child: const Text(
                           'Download',
-                          style: TextStyle(fontSize: 16, color:Colors.white),
+                          style: TextStyle(fontSize: 16, color: Colors.white),
                         ),
                       ),
                     ),

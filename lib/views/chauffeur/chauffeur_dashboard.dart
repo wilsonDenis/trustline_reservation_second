@@ -1,29 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:badges/badges.dart' as badges;
-import 'package:trust_reservation_second/views/admin/admin_auth.dart';
-import 'package:trust_reservation_second/views/admin/auth_receptionnist.dart';
 import 'package:trust_reservation_second/views/chauffeur/profile_screen.dart';
 import 'package:trust_reservation_second/views/hotel/history_reservation.dart';
 import 'package:trust_reservation_second/views/hotel/invoice_details_screen.dart';
 import 'package:trust_reservation_second/widgets/custom_container.dart';
 import 'package:trust_reservation_second/widgets/custom_container_large.dart';
 import 'package:trust_reservation_second/views/hotel/hotel_notifications_page.dart';
+import 'package:trust_reservation_second/services/auth_service.dart';
+import 'package:trust_reservation_second/views/login_screen.dart';
 
 class ChauffeurDashboard extends StatefulWidget {
   const ChauffeurDashboard({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _ChauffeurDashboardState createState() => _ChauffeurDashboardState();
 }
 
 class _ChauffeurDashboardState extends State<ChauffeurDashboard> {
+  // ignore: unused_field
   int _selectedIndex = 0;
+  final AuthService _authService = AuthService();
 
+  // ignore: unused_element
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  Future<void> _logout() async {
+    await _authService.logout();
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      (route) => false,
+    );
   }
 
   @override
@@ -34,7 +47,8 @@ class _ChauffeurDashboardState extends State<ChauffeurDashboard> {
         'count': 0, // Utilisez 0 pour la compatibilité
         'icon': Icons.person,
         'color': Colors.pink,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen())),
+        'onTap': () => Navigator.push(
+            context, MaterialPageRoute(builder: (context) => ProfileScreen())),
         'showIconInsteadOfCount': true, // Ajoutez cette ligne
       },
       {
@@ -42,7 +56,10 @@ class _ChauffeurDashboardState extends State<ChauffeurDashboard> {
         'count': 298,
         'icon': Icons.receipt_long,
         'color': Colors.orange,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const InvoiceDetailsScreen())),
+        'onTap': () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const InvoiceDetailsScreen())),
         'showIconInsteadOfCount': false, // Assurez-vous que cela est défini
       },
       {
@@ -50,23 +67,25 @@ class _ChauffeurDashboardState extends State<ChauffeurDashboard> {
         'count': 0,
         'icon': Icons.calendar_today,
         'color': Colors.blue,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const HistoryReservations())),
+        'onTap': () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const HistoryReservations())),
         'showIconInsteadOfCount': false, // Assurez-vous que cela est défini
       },
     ];
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(70.0), // Augmentez la hauteur pour donner plus d'espace
+        preferredSize: const Size.fromHeight(
+            70.0), // Augmentez la hauteur pour donner plus d'espace
         child: SafeArea(
           child: AppBar(
             backgroundColor: Colors.white,
             elevation: 0,
             leading: IconButton(
-              icon: const Icon(Icons.menu, color: Colors.black),
-              onPressed: () {
-                // Action pour le bouton de menu
-              },
+              icon: const Icon(Icons.logout, color: Colors.black),
+              onPressed: _logout, // Action pour le bouton de déconnexion
             ),
             title: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,11 +103,16 @@ class _ChauffeurDashboardState extends State<ChauffeurDashboard> {
             actions: [
               badges.Badge(
                 showBadge: true,
-                badgeContent: const Text('5', style: TextStyle(color: Colors.white)),
+                badgeContent:
+                    const Text('5', style: TextStyle(color: Colors.white)),
                 child: IconButton(
                   icon: const Icon(Icons.notifications, color: Colors.grey),
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const HotelNotificationsPage()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const HotelNotificationsPage()));
                   },
                 ),
               ),
@@ -146,9 +170,10 @@ class _ChauffeurDashboardState extends State<ChauffeurDashboard> {
                             count: dashboardItems[0]['count'],
                             color: dashboardItems[0]['color'],
                             onTap: dashboardItems[0]['onTap'],
-                            showIconInsteadOfCount: dashboardItems[0]['showIconInsteadOfCount'], // Ajoutez cette ligne
-                            width: 200, // Spécifiez la largeur ici
-                            height: 200, // Spécifiez la hauteur ici
+                            showIconInsteadOfCount: dashboardItems[0][
+                                'showIconInsteadOfCount'], // Ajoutez cette ligne
+                            width: 180, // Spécifiez la largeur ici
+                            height: 180, // Spécifiez la hauteur ici
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -159,9 +184,10 @@ class _ChauffeurDashboardState extends State<ChauffeurDashboard> {
                             count: dashboardItems[1]['count'],
                             color: dashboardItems[1]['color'],
                             onTap: dashboardItems[1]['onTap'],
-                            showIconInsteadOfCount: dashboardItems[1]['showIconInsteadOfCount'], // Ajoutez cette ligne
-                            width: 200, // Spécifiez la largeur ici
-                            height: 200, // Spécifiez la hauteur ici
+                            showIconInsteadOfCount: dashboardItems[1][
+                                'showIconInsteadOfCount'], // Ajoutez cette ligne
+                            width: 180, // Spécifiez la largeur ici
+                            height:180, // Spécifiez la hauteur ici
                           ),
                         ),
                       ],

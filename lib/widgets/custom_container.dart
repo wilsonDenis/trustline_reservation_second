@@ -1,7 +1,6 @@
 // custom_container.dart
 import 'package:flutter/material.dart';
 
-
 class CustomContainer extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -30,7 +29,8 @@ class CustomContainer extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: width ?? 150, // Utilisez la largeur par défaut si non spécifiée
-        height: height ?? 100, // Utilisez la hauteur par défaut si non spécifiée
+        height:
+            height ?? 100, // Utilisez la hauteur par défaut si non spécifiée
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
@@ -82,7 +82,6 @@ class CustomContainer extends StatelessWidget {
     );
   }
 }
-
 
 // class CustomContainer extends StatelessWidget {
 //   final IconData icon;

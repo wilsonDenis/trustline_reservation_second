@@ -12,7 +12,8 @@ class ReservationDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<AnimatedFloatingActionButtonState> fabKey = GlobalKey<AnimatedFloatingActionButtonState>();
+    final GlobalKey<AnimatedFloatingActionButtonState> fabKey =
+        GlobalKey<AnimatedFloatingActionButtonState>();
 
     Widget editButton() {
       return FloatingActionButton(
@@ -21,7 +22,10 @@ class ReservationDetailsScreen extends StatelessWidget {
         },
         heroTag: "edit",
         tooltip: 'Edit',
-        child: Icon(Icons.edit,color: Colors.white,),
+        child: Icon(
+          Icons.edit,
+          color: Colors.white,
+        ),
         backgroundColor: ColorsApp.primaryColor,
       );
     }
@@ -33,7 +37,10 @@ class ReservationDetailsScreen extends StatelessWidget {
         },
         heroTag: "delete",
         tooltip: 'Delete',
-        child: Icon(Icons.delete, color: Colors.white,),
+        child: Icon(
+          Icons.delete,
+          color: Colors.white,
+        ),
         backgroundColor: ColorsApp.primaryColor,
       );
     }
@@ -45,7 +52,7 @@ class ReservationDetailsScreen extends StatelessWidget {
         },
         heroTag: "share",
         tooltip: 'Share',
-        child: Icon(Icons.share,color: Colors.white),
+        child: Icon(Icons.share, color: Colors.white),
         backgroundColor: ColorsApp.primaryColor,
       );
     }
@@ -101,7 +108,8 @@ class ReservationDetailsScreen extends StatelessWidget {
             Align(
               alignment: Alignment.center,
               child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 40.0),
+                margin: const EdgeInsets.symmetric(
+                    horizontal: 16.0, vertical: 40.0),
                 padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -178,8 +186,10 @@ class ReservationDetailsScreen extends StatelessWidget {
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Passenger Name', style: TextStyle(color: Colors.grey)),
-                        Text('Flight Date', style: TextStyle(color: Colors.grey)),
+                        Text('Passenger Name',
+                            style: TextStyle(color: Colors.grey)),
+                        Text('Flight Date',
+                            style: TextStyle(color: Colors.grey)),
                       ],
                     ),
                     const SizedBox(height: 5),

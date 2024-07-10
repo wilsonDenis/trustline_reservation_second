@@ -10,7 +10,8 @@ class ResetPasswordScreen extends StatefulWidget {
   _ResetPasswordScreenState createState() => _ResetPasswordScreenState();
 }
 
-class _ResetPasswordScreenState extends State<ResetPasswordScreen> with SingleTickerProviderStateMixin {
+class _ResetPasswordScreenState extends State<ResetPasswordScreen>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   TextEditingController txtEmail = TextEditingController();
   TextEditingController txtPassword = TextEditingController();
@@ -47,77 +48,78 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> with SingleTi
   }
 
   Future<void> _submit() async {
-  if (_formKey.currentState!.validate()) {
-    if (txtPassword.text!= txtConfirmPassword.text) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Erreur'),
-          content: const Text('Les mots de passe ne correspondent pas.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                if (!mounted) return;
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
-    } else {
-      // Simulate API call here
-      try {
-        // Simulate API call
-        await Future.delayed(const Duration(seconds: 2));
-        // If everything goes well, you can display a success message or redirect the user
-        // Defer the showDialog call until after the successful completion of the async operation
-        _showSuccessDialog(context);
-      } catch (e) {
-        // Handle API error here
-        _showErrorDialog(context, e.toString());
+    if (_formKey.currentState!.validate()) {
+      if (txtPassword.text != txtConfirmPassword.text) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Erreur'),
+            content: const Text('Les mots de passe ne correspondent pas.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  if (!mounted) return;
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      } else {
+        // Simulate API call here
+        try {
+          // Simulate API call
+          await Future.delayed(const Duration(seconds: 2));
+          // If everything goes well, you can display a success message or redirect the user
+          // Defer the showDialog call until after the successful completion of the async operation
+          _showSuccessDialog(context);
+        } catch (e) {
+          // Handle API error here
+          _showErrorDialog(context, e.toString());
+        }
       }
     }
   }
-}
 
-void _showSuccessDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: const Text('Succès'),
-      content: const Text('Le mot de passe a été réinitialisé avec succès.'),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () {
-            if (!mounted) return;
-            Navigator.of(context).pop();
-          },
-          child: const Text('OK'),
-        ),
-      ],
-    ),
-  );
-}
+  void _showSuccessDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Succès'),
+        content: const Text('Le mot de passe a été réinitialisé avec succès.'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              if (!mounted) return;
+              Navigator.of(context).pop();
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 
-void _showErrorDialog(BuildContext context, String errorMessage) {
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: const Text('Erreur'),
-      content: Text(errorMessage),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () {
-            if (!mounted) return;
-            Navigator.of(context).pop();
-          },
-          child: const Text('OK'),
-        ),
-      ],
-    ),
-  );
-}
+  void _showErrorDialog(BuildContext context, String errorMessage) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Erreur'),
+        content: Text(errorMessage),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              if (!mounted) return;
+              Navigator.of(context).pop();
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -144,7 +146,8 @@ void _showErrorDialog(BuildContext context, String errorMessage) {
               child: ScaleTransition(
                 scale: _scaleAnimation,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
                   margin: const EdgeInsets.symmetric(horizontal: 20),
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -171,7 +174,9 @@ void _showErrorDialog(BuildContext context, String errorMessage) {
                             validator: (value) =>
                                 value!.isEmpty ? 'Email is required' : null,
                             controller: txtEmail,
-                            readOnly: true, obscureText: false, // Transformer en champ de lecture seule
+                            readOnly: true,
+                            obscureText:
+                                false, // Transformer en champ de lecture seule
                           ),
                           const SizedBox(height: 20),
                           CustomTextFormField(
@@ -189,8 +194,9 @@ void _showErrorDialog(BuildContext context, String errorMessage) {
                             hintText: 'Confirm your new password',
                             prefixIcon: Icons.lock,
                             // showSuffixIcon: true,
-                            validator: (value) =>
-                                value!.isEmpty ? 'Password confirmation is required' : null,
+                            validator: (value) => value!.isEmpty
+                                ? 'Password confirmation is required'
+                                : null,
                             controller: txtConfirmPassword, obscureText: false,
                           ),
                           const SizedBox(height: 20),

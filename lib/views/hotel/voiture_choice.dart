@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 class VoitureChoice extends StatelessWidget {
   final Function(String) onCarSelected;
 
-  const VoitureChoice({Key? key, required this.onCarSelected}) : super(key: key);
+  const VoitureChoice({Key? key, required this.onCarSelected})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +46,8 @@ class VoitureChoice extends StatelessWidget {
                     child: Image.asset(carImages[index], fit: BoxFit.cover),
                   ),
                   const SizedBox(height: 8),
-                  const Text('Car Model', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Text('Car Model',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   const Text('Price: \$50'),
                 ],

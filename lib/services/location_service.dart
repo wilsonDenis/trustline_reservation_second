@@ -1,18 +1,23 @@
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:dio/dio.dart';
 
 class LocationService {
-  static const String apiKey = 'AIBEilIuISSFHLbArteSd2h21szUMcTlLJiQPw'; // Remplacez par votre clé API
+  static const String apiKey = 'AIzaSyBEilIuILbArteSd2h21UUMcTsolLJiQPw'; // Remplacez par votre clé API
+  static final Dio _dio = Dio();
+
   static Future<List<Place>> getSuggestions(String input) async {
     final String url = 'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&key=$apiKey&language=fr';
 
-    final response = await http.get(Uri.parse(url));
+    try {
+      final response = await _dio.get(url);
 
-    if (response.statusCode == 200) {
-      final List<dynamic> predictions = json.decode(response.body)['predictions'];
-      return predictions.map((json) => Place.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to load suggestions');
+      if (response.statusCode == 200) {
+        final List<dynamic> predictions = response.data['predictions'];
+        return predictions.map((json) => Place.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load suggestions');
+      }
+    } catch (e) {
+      throw Exception('Failed to load suggestions: $e');
     }
   }
 }
@@ -28,7 +33,3 @@ class Place {
     );
   }
 }
-
-
-
-

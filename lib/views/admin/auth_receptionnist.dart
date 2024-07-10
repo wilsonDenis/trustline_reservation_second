@@ -11,13 +11,15 @@ class AuthReceptionnist extends StatefulWidget {
 }
 
 class _AuthReceptionnistState extends State<AuthReceptionnist> {
-  final int numberOfFields = 4; // Changez ce nombre pour augmenter ou diminuer le nombre de champs
+  final int numberOfFields =
+      4; // Changez ce nombre pour augmenter ou diminuer le nombre de champs
   late final List<TextEditingController> _controllers;
 
   @override
   void initState() {
     super.initState();
-    _controllers = List.generate(numberOfFields, (_) => TextEditingController());
+    _controllers =
+        List.generate(numberOfFields, (_) => TextEditingController());
   }
 
   @override
@@ -59,7 +61,8 @@ class _AuthReceptionnistState extends State<AuthReceptionnist> {
                 ),
                 const SizedBox(height: 40.0),
                 RectangleButton(
-                  onPressed: () => Navigator.pushNamed(context, '/createreservation'),
+                  onPressed: () =>
+                      Navigator.pushNamed(context, '/createreservation'),
                   buttonText: "Done",
                   buttonColor: ColorsApp.primaryColor,
                   textColor: Colors.white,

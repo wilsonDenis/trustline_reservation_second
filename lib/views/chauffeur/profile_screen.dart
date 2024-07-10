@@ -13,7 +13,8 @@ class ProfileScreen extends StatelessWidget {
             SizedBox(height: 40), // Added to provide some top space
             CircleAvatar(
               radius: 50,
-              backgroundImage: AssetImage('assets/icon_profile.png'), // Default profile image
+              backgroundImage: AssetImage(
+                  'assets/icon_profile.png'), // Default profile image
             ),
             SizedBox(height: 8),
             Text(
@@ -91,7 +92,8 @@ class ProfileScreen extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 50,
-                backgroundImage: AssetImage('assets/icon_profile.png'), // Default profile image
+                backgroundImage: AssetImage(
+                    'assets/icon_profile.png'), // Default profile image
               ),
               SizedBox(height: 8),
               Text(

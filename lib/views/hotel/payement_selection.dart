@@ -4,7 +4,8 @@ import 'package:trust_reservation_second/views/hotel/create_reservation.dart';
 class PaymentSelection extends StatelessWidget {
   final VoidCallback onPaymentCompleted;
 
-  const PaymentSelection({Key? key, required this.onPaymentCompleted}) : super(key: key);
+  const PaymentSelection({Key? key, required this.onPaymentCompleted})
+      : super(key: key);
 
   void _completePayment(BuildContext context) {
     onPaymentCompleted();

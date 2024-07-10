@@ -23,8 +23,10 @@ class CustomContainerLarge extends StatelessWidget {
       child: Container(
         width: double.infinity, // Set the width to be full width
         height: 150, // Increased height for more space
-        padding: const EdgeInsets.all(16), // Increased padding for better spacing
-        margin: const EdgeInsets.symmetric(vertical: 10), // Margin for spacing between items
+        padding:
+            const EdgeInsets.all(16), // Increased padding for better spacing
+        margin: const EdgeInsets.symmetric(
+            vertical: 10), // Margin for spacing between items
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
           color: Colors.white,

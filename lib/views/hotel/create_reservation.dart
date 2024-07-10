@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trust_reservation_second/constants/colors_app.dart';
+import 'package:trust_reservation_second/services/location_service.dart';
 import 'package:trust_reservation_second/views/hotel/contact_form.dart';
 import 'package:trust_reservation_second/views/hotel/payement_selection.dart';
 import 'package:trust_reservation_second/views/hotel/voiture_choice.dart';
@@ -41,16 +42,16 @@ class _CreateReservationState extends State<CreateReservation> {
   Future<void> _loadAddresses() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _addressController.text = prefs.getString('default_address') ?? 'Adresse de départ';
+      _addressController.text =
+          prefs.getString('default_address') ?? 'Adresse de départ';
     });
   }
 
   void _swapAddress() {
     setState(() {
       isDefaultAddress = !isDefaultAddress;
-      _addressController.text = isDefaultAddress
-          ? 'Adresse de départ'
-          : 'Adresse d\'arrivée';
+      _addressController.text =
+          isDefaultAddress ? 'Adresse de départ' : 'Adresse d\'arrivée';
     });
   }
 
@@ -86,34 +87,43 @@ class _CreateReservationState extends State<CreateReservation> {
       if (_currentStep == 2) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => VoitureChoice(onCarSelected: (car) {
-            setState(() {
-              _selectedVehicle = car;
-            });
-            Navigator.push(
-              context,
-             MaterialPageRoute(builder: (context) => ContactForm(onContactSubmitted: () {
-  setState(() {
-    _name = ""; // Assuming you want to set default values or handle them differently
-    _phone = "";
-    _email = "";
-  });
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => PaymentSelection(onPaymentCompleted: () {
-      setState(() {
-        _currentStep = 3;
-      });
-      Navigator.popUntil(context, (route) => route.isFirst);
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const CreateReservation()),
-      );
-    })),
-  );
-})),
-            );
-          })),
+          MaterialPageRoute(
+              builder: (context) => VoitureChoice(onCarSelected: (car) {
+                    setState(() {
+                      _selectedVehicle = car;
+                    });
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              ContactForm(onContactSubmitted: () {
+                                setState(() {
+                                  _name =
+                                      ""; // Assuming you want to set default values or handle them differently
+                                  _phone = "";
+                                  _email = "";
+                                });
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => PaymentSelection(
+                                              onPaymentCompleted: () {
+                                            setState(() {
+                                              _currentStep = 3;
+                                            });
+                                            Navigator.popUntil(context,
+                                                (route) => route.isFirst);
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const CreateReservation()),
+                                            );
+                                          })),
+                                );
+                              })),
+                    );
+                  })),
         );
       } else {
         setState(() {
@@ -144,7 +154,8 @@ class _CreateReservationState extends State<CreateReservation> {
                 child: GestureDetector(
                   onTap: () => _selectDate(context),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 16, horizontal: 20),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: Colors.grey),
@@ -158,7 +169,8 @@ class _CreateReservationState extends State<CreateReservation> {
                         ),
                         Text(
                           _selectedDate != null
-                              ? DateFormat.yMMMMd('fr_FR').format(_selectedDate!)
+                              ? DateFormat.yMMMMd('fr_FR')
+                                  .format(_selectedDate!)
                               : 'date',
                           style: const TextStyle(
                             fontSize: 16,
@@ -175,7 +187,8 @@ class _CreateReservationState extends State<CreateReservation> {
                 child: GestureDetector(
                   onTap: () => _selectTime(context),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 16, horizontal: 20),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: Colors.grey),
@@ -204,25 +217,64 @@ class _CreateReservationState extends State<CreateReservation> {
             ],
           ),
           const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: TextFormField(
-                  controller: _addressController,
-                  decoration: InputDecoration(
-                    labelText: isDefaultAddress ? 'Adresse de départ' : 'Adresse d\'arrivée',
-                    prefixIcon: const Icon(Icons.location_on),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.grey),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.location_on, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Autocomplete<Place>(
+                      optionsBuilder: (TextEditingValue textEditingValue) {
+                        if (textEditingValue.text == '') {
+                          return const Iterable<Place>.empty();
+                        }
+                        return LocationService.getSuggestions(
+                                textEditingValue.text)
+                            .then((suggestions) => suggestions);
+                      },
+                      displayStringForOption: (Place option) => option.description,
+                      onSelected: (Place selection) {
+                        setState(() {
+                          _addressController.text =
+                              selection.description;
+                        });
+                      },
+                      fieldViewBuilder: (
+                        BuildContext context,
+                        TextEditingController fieldTextEditingController,
+                        FocusNode fieldFocusNode,
+                        VoidCallback onFieldSubmitted,
+                      ) {
+                        return TextFormField(
+                          controller: fieldTextEditingController,
+                          focusNode: fieldFocusNode,
+                          onFieldSubmitted: (String value) {
+                            onFieldSubmitted();
+                          },
+                          decoration: const InputDecoration(
+                            labelText: 'Adresse de départ',
+                            // prefixIcon: Icon(Icons.location_on),
+                            border: InputBorder.none, // Supprimer la bordure
+                          ),
+                        );
+                      },
                     ),
                   ),
-                ),
+                  IconButton(
+                    icon: const Icon(Icons.swap_horiz,
+                        color: ColorsApp.primaryColor),
+                    onPressed: _swapAddress,
+                  ),
+                ],
               ),
-              IconButton(
-                icon: const Icon(Icons.swap_horiz, color: ColorsApp.primaryColor),
-                onPressed: _swapAddress,
-              ),
-            ],
+            ),
           ),
         ],
       ),
@@ -324,6 +376,7 @@ class _CreateReservationState extends State<CreateReservation> {
   Widget build(BuildContext context) {
     return Center(
       child: Scaffold(
+        resizeToAvoidBottomInset: true,
         backgroundColor: Colors.white,
         appBar: AppBar(
           leading: IconButton(
@@ -372,7 +425,8 @@ class _CreateReservationState extends State<CreateReservation> {
                         Center(
                           child: Text(
                             'Étape ${_currentStep + 1}',
-                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -383,7 +437,9 @@ class _CreateReservationState extends State<CreateReservation> {
                             Expanded(
                               child: CustomButton(
                                 onPressed: _continue,
-                                text: _currentStep == 3 ? 'Confirmer' : 'Continuer',
+                                text: _currentStep == 3
+                                    ? 'Confirmer'
+                                    : 'Continuer', backgroundColor: Colors.blue,
                               ),
                             ),
                             const SizedBox(width: 8),

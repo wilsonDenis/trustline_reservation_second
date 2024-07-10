@@ -13,7 +13,6 @@ class CustomTextFormField extends StatefulWidget {
   final IconData? suffixIcon; // Icône suffixe optionnelle
   final Color? prefixIconColor; // Couleur de l'icône préfixe
   final Color? suffixIconColor; // Couleur de l'icône suffixe
-  
 
   const CustomTextFormField({
     super.key,
@@ -27,8 +26,10 @@ class CustomTextFormField extends StatefulWidget {
     this.prefixIconColor,
     this.suffixIconColor,
     this.readOnly = false,
-    this.borderColor = Colors.grey, // Valeur par défaut de la couleur de la bordure
-    this.borderWidth = 1.0, required bool obscureText,
+    this.borderColor =
+        Colors.grey, // Valeur par défaut de la couleur de la bordure
+    this.borderWidth = 1.0,
+    required bool obscureText,
   });
 
   @override
@@ -41,7 +42,6 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      
       controller: widget.controller,
       obscureText: _obscureText,
       keyboardType: widget.keyboardType,
@@ -55,22 +55,27 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(
-            color: widget.borderColor, // Utilisation de la couleur de la bordure
-            width: widget.borderWidth, // Utilisation de la largeur de la bordure
+            color:
+                widget.borderColor, // Utilisation de la couleur de la bordure
+            width:
+                widget.borderWidth, // Utilisation de la largeur de la bordure
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(
-            color: widget.borderColor, // Utilisation de la couleur de la bordure
-            width: widget.borderWidth, // Utilisation de la largeur de la bordure
+            color:
+                widget.borderColor, // Utilisation de la couleur de la bordure
+            width:
+                widget.borderWidth, // Utilisation de la largeur de la bordure
           ),
         ),
         suffixIcon: widget.suffixIcon != null
             ? IconButton(
                 icon: Icon(widget.suffixIcon, color: widget.suffixIconColor),
                 onPressed: () {
-                  if (widget.suffixIcon == Icons.visibility || widget.suffixIcon == Icons.visibility_off) {
+                  if (widget.suffixIcon == Icons.visibility ||
+                      widget.suffixIcon == Icons.visibility_off) {
                     setState(() {
                       _obscureText = !_obscureText;
                     });

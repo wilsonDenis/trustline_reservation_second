@@ -4,7 +4,8 @@ import 'package:trust_reservation_second/widgets/custom_button.dart';
 class ContactForm extends StatelessWidget {
   final VoidCallback onContactSubmitted;
 
-  const ContactForm({Key? key, required this.onContactSubmitted}) : super(key: key);
+  const ContactForm({Key? key, required this.onContactSubmitted})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +40,7 @@ class ContactForm extends StatelessWidget {
               onPressed: () {
                 onContactSubmitted();
               },
-              text: 'Soumettre',
+              text: 'Soumettre', backgroundColor: Colors.blue,
             ),
           ],
         ),

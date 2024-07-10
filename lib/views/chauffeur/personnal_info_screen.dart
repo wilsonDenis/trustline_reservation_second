@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:trust_reservation_second/constants/colors_app.dart';
 import 'package:trust_reservation_second/widgets/custom_icon_button.dart';
 
-
 class PersonalInformationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -17,20 +16,28 @@ class PersonalInformationScreen extends StatelessWidget {
           children: [
             _buildTextField('Nom complet', 'Nom complet'),
             _buildTextField('Adresse électronique', 'email@example.com'),
-            _buildTextField('Numéro de téléphone', 'Téléphone', prefixIcon: Icons.flag),
-            _buildTextField('Date de naissance', 'AAAA/MM/JJ', suffixIcon: Icons.calendar_today),
+            _buildTextField('Numéro de téléphone', 'Téléphone',
+                prefixIcon: Icons.flag),
+            _buildTextField('Date de naissance', 'AAAA/MM/JJ',
+                suffixIcon: Icons.calendar_today),
             _buildDropdownField('Département', ['Option 1', 'Option 2']),
             _buildDropdownField('Ville', ['Option 1', 'Option 2']),
             _buildTextField('Adresse de résidence', 'Adresse'),
             SizedBox(height: 20),
-           CustomIconButton(icon: Icons.save, label: "enregister", color: ColorsApp.primaryColor, onPressed: (){},),
+            CustomIconButton(
+              icon: Icons.save,
+              label: "enregister",
+              color: ColorsApp.primaryColor,
+              onPressed: () {},
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTextField(String label, String hint, {IconData? prefixIcon, IconData? suffixIcon}) {
+  Widget _buildTextField(String label, String hint,
+      {IconData? prefixIcon, IconData? suffixIcon}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextField(

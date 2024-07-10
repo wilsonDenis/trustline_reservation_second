@@ -6,13 +6,11 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:trust_reservation_second/views/admin/admin_auth.dart';
 import 'package:trust_reservation_second/views/admin/auth_receptionnist.dart';
-import 'package:trust_reservation_second/views/hotel/create_reservation.dart';
 import 'package:trust_reservation_second/views/hotel/history_reservation.dart';
-import 'package:trust_reservation_second/views/hotel/info_hotel_page.dart';
 import 'package:trust_reservation_second/views/hotel/invoice_details_screen.dart';
+import 'package:trust_reservation_second/views/login_screen.dart';
 import 'package:trust_reservation_second/widgets/custom_container.dart';
 import 'package:trust_reservation_second/views/hotel/hotel_notifications_page.dart';
-
 
 class HotelDashboard extends StatefulWidget {
   const HotelDashboard({super.key});
@@ -24,11 +22,21 @@ class HotelDashboard extends StatefulWidget {
 class _HotelDashboardState extends State<HotelDashboard> {
   int _selectedIndex = 0;
 
-
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  Future<void> _logout() async {
+    // Simulate logout process
+    await Future.delayed(const Duration(seconds: 1));
+    // Navigate to login screen
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      (route) => false,
+    );
   }
 
   @override
@@ -39,15 +47,16 @@ class _HotelDashboardState extends State<HotelDashboard> {
         'count': 0,
         'icon': Icons.add,
         'color': Colors.pink,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const AuthReceptionnist())),
-
+        'onTap': () => Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const AuthReceptionnist())),
       },
       {
         'title': 'Confiugration',
         'count': 298,
         'icon': Icons.hotel_outlined,
         'color': Colors.orange,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const AdminAuth())),
+        'onTap': () => Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const AdminAuth())),
         // 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const HistoryReservations())),
       },
       {
@@ -55,32 +64,34 @@ class _HotelDashboardState extends State<HotelDashboard> {
         'count': 54,
         'icon': Icons.history_toggle_off,
         'color': Colors.blue,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const HistoryReservations())),
-
+        'onTap': () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const HistoryReservations())),
       },
       {
         'title': 'Invoices',
         'count': 48,
         'icon': Icons.inventory_outlined,
-        'color': Colors.green,//InvoiceDetailsScreen
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const InvoiceDetailsScreen())),
-
-
+        'color': Colors.green, //InvoiceDetailsScreen
+        'onTap': () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const InvoiceDetailsScreen())),
       },
     ];
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(70.0), // Increase the height to give more space
+        preferredSize: const Size.fromHeight(
+            70.0), // Increase the height to give more space
         child: SafeArea(
           child: AppBar(
             backgroundColor: Colors.white,
             elevation: 0,
             leading: IconButton(
-              icon: const Icon(Icons.menu, color: Colors.black),
-              onPressed: () {
-                // Action for menu button
-              },
+              icon: const Icon(Icons.power_settings_new_outlined, color: Colors.green,size: 30,),
+               onPressed: _logout,
             ),
             title: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,11 +109,16 @@ class _HotelDashboardState extends State<HotelDashboard> {
             actions: [
               badges.Badge(
                 showBadge: true,
-                badgeContent: const Text('5', style: TextStyle(color: Colors.white)),
+                badgeContent:
+                    const Text('5', style: TextStyle(color: Colors.white)),
                 child: IconButton(
                   icon: const Icon(Icons.notifications, color: Colors.grey),
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const HotelNotificationsPage()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const HotelNotificationsPage()));
                   },
                 ),
               ),
@@ -184,15 +200,13 @@ class _HotelDashboardState extends State<HotelDashboard> {
             icon: Icon(Icons.list, color: Colors.grey),
             label: 'Reservations',
           ),
-         
           BottomNavigationBarItem(
             icon: Icon(Icons.message, color: Colors.grey),
             label: 'Messages',
           ),
-         
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor:  const Color.fromARGB(255, 0, 26, 51),
+        selectedItemColor: const Color.fromARGB(255, 0, 26, 51),
         onTap: _onItemTapped,
       ),
     );

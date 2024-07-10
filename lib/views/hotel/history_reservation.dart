@@ -34,7 +34,8 @@ class _HistoryReservationsState extends State<HistoryReservations> {
 
   final Set<int> _selectedReservations = {};
 
-  void _showInvoiceOptions(BuildContext context, Map<String, String> reservation) {
+  void _showInvoiceOptions(
+      BuildContext context, Map<String, String> reservation) {
     if (_selectedReservations.isEmpty) {
       showCupertinoModalPopup(
         context: context,
@@ -48,7 +49,8 @@ class _HistoryReservationsState extends State<HistoryReservations> {
                   Navigator.push(
                     context,
                     CupertinoPageRoute(
-                      builder: (context) => ReservationDetailsScreen(reservation: reservation),
+                      builder: (context) =>
+                          ReservationDetailsScreen(reservation: reservation),
                     ),
                   );
                 },
@@ -88,7 +90,8 @@ class _HistoryReservationsState extends State<HistoryReservations> {
       builder: (context) {
         return CupertinoAlertDialog(
           title: const Text('Demande de Facture'),
-          content: const Text('Voulez-vous demander une facture pour les réservations sélectionnées ?'),
+          content: const Text(
+              'Voulez-vous demander une facture pour les réservations sélectionnées ?'),
           actions: [
             CupertinoDialogAction(
               onPressed: () {
@@ -103,7 +106,8 @@ class _HistoryReservationsState extends State<HistoryReservations> {
                   Navigator.push(
                     context,
                     CupertinoPageRoute(
-                      builder: (context) => ReservationDetailsScreen(reservation: reservations[index]),
+                      builder: (context) => ReservationDetailsScreen(
+                          reservation: reservations[index]),
                     ),
                   );
                 }
@@ -167,7 +171,8 @@ class _HistoryReservationsState extends State<HistoryReservations> {
               ),
               margin: const EdgeInsets.symmetric(vertical: 8.0),
               child: CupertinoListTile(
-                leading: const Icon(CupertinoIcons.calendar, color: ColorsApp.primaryColor),
+                leading: const Icon(CupertinoIcons.calendar,
+                    color: ColorsApp.primaryColor),
                 title: Text(
                   reservation['name']!,
                   style: const TextStyle(fontWeight: FontWeight.bold),
@@ -181,7 +186,8 @@ class _HistoryReservationsState extends State<HistoryReservations> {
                   ],
                 ),
                 trailing: isSelected
-                    ? const Icon(CupertinoIcons.check_mark_circled_solid, color:Colors.green)
+                    ? const Icon(CupertinoIcons.check_mark_circled_solid,
+                        color: Colors.green)
                     : const Icon(CupertinoIcons.circle),
                 onTap: () {
                   if (_selectedReservations.isEmpty) {

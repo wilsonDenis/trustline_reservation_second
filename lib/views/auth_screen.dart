@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
 import 'login_screen.dart';
 
-
 class AuthScreen extends StatelessWidget {
   const AuthScreen({super.key});
 
@@ -61,9 +60,7 @@ class AuthScreen extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                 
-                 
-                   OpenContainer(
+                  OpenContainer(
                     transitionType: ContainerTransitionType.fade,
                     closedElevation: 0,
                     closedShape: RoundedRectangleBorder(

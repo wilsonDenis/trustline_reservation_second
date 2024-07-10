@@ -58,7 +58,7 @@ class _AddReceptionistScreenState extends State<AddReceptionistScreen> {
       //     },
       //   ),
       //   centerTitle: true,
-      
+
       // ),
       body: Stack(
         fit: StackFit.expand,
@@ -97,7 +97,8 @@ class _AddReceptionistScreenState extends State<AddReceptionistScreen> {
                       const Center(
                         child: Text(
                           "Add Receptionist",
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold),
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -111,7 +112,8 @@ class _AddReceptionistScreenState extends State<AddReceptionistScreen> {
                             return 'Please enter the name';
                           }
                           return null;
-                        }, obscureText: false,
+                        },
+                        obscureText: false,
                       ),
                       const SizedBox(height: 16),
                       CustomTextFormField(
@@ -123,11 +125,13 @@ class _AddReceptionistScreenState extends State<AddReceptionistScreen> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter the email';
-                          } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                          } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+                              .hasMatch(value)) {
                             return 'Please enter a valid email';
                           }
                           return null;
-                        }, obscureText:false,
+                        },
+                        obscureText: false,
                       ),
                       const SizedBox(height: 16),
                       CustomTextFormField(
@@ -154,7 +158,7 @@ class _AddReceptionistScreenState extends State<AddReceptionistScreen> {
                               await _sendDetailsToAPI();
                             }
                           },
-                          text: 'Add Receptionist', 
+                          text: 'Add Receptionist', backgroundColor: Colors.blue,
                         ),
                       ),
                     ],

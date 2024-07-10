@@ -1,24 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:trust_reservation_second/services/local_storage.dart';
+import 'package:trust_reservation_second/views/admin/admin_dasboard.dart';
+import 'package:trust_reservation_second/views/chauffeur/chauffeur_dashboard.dart';
+import 'package:trust_reservation_second/views/hotel/hotel_dashboard.dart';
 import 'package:trust_reservation_second/views/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  const SplashScreen({Key? key}) : super(key: key);
 
   @override
-  State<SplashScreen> createState() => _SplashScreengState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreengState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Naviguer automatiquement vers l'écran de connexion après quelques secondes
-    Future.delayed(const Duration(seconds: 2), () {
-      Navigator.of(context).pushAndRemoveUntil(
+    _checkLoginStatus(context);
+  }
+
+  Future<void> _checkLoginStatus(BuildContext context) async {
+    await Future.delayed(const Duration(seconds: 2));
+
+    final userType = await LocalStorageService.getData('user_type');
+
+    if (userType != null) {
+      if (userType == 'administrateur') {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const AdminDashboard()),
+        );
+      } else if (userType == 'chauffeur') {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const ChauffeurDashboard()),
+        );
+      } else if (userType == 'hotel') {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const HotelDashboard()),
+        );
+      } else {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+      }
+    } else {
+      Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const LoginScreen()),
-        (route) => false,
       );
-    });
+    }
   }
 
   @override
@@ -35,7 +63,7 @@ class _SplashScreengState extends State<SplashScreen> {
                 size: 100,
                 color: Colors.white,
               ),
-              SizedBox(height: 20), // Ajoute un espace entre l'icône et le texte
+              SizedBox(height: 20),
               Text(
                 'TrustLine',
                 style: TextStyle(

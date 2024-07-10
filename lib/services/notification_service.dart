@@ -1,14 +1,16 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
-import 'package:trust_reservation_second/services/local_storage.dart';
 import 'api_service.dart';
 
 class NotificationService {
-  static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   static Future<void> initialize() async {
-    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
-    const InitializationSettings initializationSettings = InitializationSettings(
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('app_icon');
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
       android: initializationSettingsAndroid,
     );
 
@@ -20,8 +22,10 @@ class NotificationService {
     );
   }
 
-  static Future<void> showNotification(int id, String title, String body, {String? icon}) async {
-    final AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
+  static Future<void> showNotification(int id, String title, String body,
+      {String? icon}) async {
+    final AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
       'your_channel_id',
       'your_channel_name',
       channelDescription: 'your_channel_description',
@@ -31,7 +35,8 @@ class NotificationService {
       styleInformation: const BigTextStyleInformation(''),
     );
 
-    final NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
+    final NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
 
     await flutterLocalNotificationsPlugin.show(
       id,
@@ -41,8 +46,11 @@ class NotificationService {
     );
   }
 
-  static Future<void> scheduleNotification(int id, String title, String body, DateTime scheduledTime, {String? icon}) async {
-    final AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
+  static Future<void> scheduleNotification(
+      int id, String title, String body, DateTime scheduledTime,
+      {String? icon}) async {
+    final AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
       'your_channel_id',
       'your_channel_name',
       channelDescription: 'your_channel_description',
@@ -52,7 +60,8 @@ class NotificationService {
       styleInformation: const BigTextStyleInformation(''),
     );
 
-    final NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
+    final NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
       id,
@@ -61,35 +70,20 @@ class NotificationService {
       tz.TZDateTime.from(scheduledTime, tz.local),
       platformChannelSpecifics,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.wallClockTime,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.wallClockTime,
       matchDateTimeComponents: DateTimeComponents.time,
     );
   }
 
-  static Future<void> sendApiNotification(int userId, String title, String body, {String? icon}) async {
+  static Future<void> sendApiNotification(int userId, String title, String body,
+      {String? icon}) async {
     Map<String, dynamic> data = {
-      'user_id': userId,
+      'userId': userId,
       'title': title,
       'body': body,
       'icon': icon,
     };
-    await ApiService.sendNotification(data);
-  }
-
-  static Future<void> showNotificationWithLocalData(int id) async {
-    final token = await LocalStorageService.getData('token');
-    if (token != null) {
-      await showNotification(
-        id,
-        'Token Notification',
-        'Your saved token is: $token',
-      );
-    } else {
-      await showNotification(
-        id,
-        'Token Notification',
-        'No token found in local storage.',
-      );
-    }
+    await ApiService().postData('/notifications', data);
   }
 }

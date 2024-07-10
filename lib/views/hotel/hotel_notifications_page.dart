@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 class HotelNotificationsPage extends StatefulWidget {
   const HotelNotificationsPage({super.key});
 
