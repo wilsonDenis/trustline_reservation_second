@@ -16,12 +16,12 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _checkLoginStatus(context);
+    _checkLoginStatus();
   }
 
-  Future<void> _checkLoginStatus(BuildContext context) async {
+  Future<void> _checkLoginStatus() async {
     await Future.delayed(const Duration(seconds: 2));
-
+    
     final userType = await LocalStorageService.getData('user_type');
 
     if (userType != null) {

@@ -1,211 +1,385 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:dio/dio.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:trust_reservation_second/services/user_service.dart';
+import 'package:trust_reservation_second/services/chauffeur_service.dart';
 import 'package:trust_reservation_second/views/chauffeur/profile_screen.dart';
-import 'package:trust_reservation_second/views/hotel/history_reservation.dart';
-import 'package:trust_reservation_second/views/hotel/invoice_details_screen.dart';
-import 'package:trust_reservation_second/widgets/custom_container.dart';
-import 'package:trust_reservation_second/widgets/custom_container_large.dart';
 import 'package:trust_reservation_second/views/hotel/hotel_notifications_page.dart';
-import 'package:trust_reservation_second/services/auth_service.dart';
-import 'package:trust_reservation_second/views/login_screen.dart';
 
 class ChauffeurDashboard extends StatefulWidget {
   const ChauffeurDashboard({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _ChauffeurDashboardState createState() => _ChauffeurDashboardState();
 }
 
 class _ChauffeurDashboardState extends State<ChauffeurDashboard> {
-  // ignore: unused_field
   int _selectedIndex = 0;
-  final AuthService _authService = AuthService();
+  final UserService _userService = UserService();
+  final ChauffeurService _chauffeurService = ChauffeurService();
+  Future<Response>? _chauffeurData;
+  Future<Response>? _todayTrip;
+  Future<Response>? _rating;
+  int? _userId;
 
-  // ignore: unused_element
+  @override
+  void initState() {
+    super.initState();
+    _initializeData();
+  }
+
+  Future<void> _initializeData() async {
+    final userInfo = await _userService.getUserInfo();
+    setState(() {
+      _userId = userInfo['userId'];
+      if (_userId != null) {
+        _chauffeurData = _chauffeurService.getChauffeurInfo();
+        _todayTrip = _chauffeurService.getTodayTrip(_userId!);
+        _rating = _chauffeurService.getRating(_userId!);
+      }
+    });
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
 
-  Future<void> _logout() async {
-    await _authService.logout();
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
-      (route) => false,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> dashboardItems = [
-      {
-        'title': 'Profil',
-        'count': 0, // Utilisez 0 pour la compatibilité
-        'icon': Icons.person,
-        'color': Colors.pink,
-        'onTap': () => Navigator.push(
-            context, MaterialPageRoute(builder: (context) => ProfileScreen())),
-        'showIconInsteadOfCount': true, // Ajoutez cette ligne
-      },
-      {
-        'title': 'Factures',
-        'count': 298,
-        'icon': Icons.receipt_long,
-        'color': Colors.orange,
-        'onTap': () => Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => const InvoiceDetailsScreen())),
-        'showIconInsteadOfCount': false, // Assurez-vous que cela est défini
-      },
-      {
-        'title': 'Réservations',
-        'count': 0,
-        'icon': Icons.calendar_today,
-        'color': Colors.blue,
-        'onTap': () => Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => const HistoryReservations())),
-        'showIconInsteadOfCount': false, // Assurez-vous que cela est défini
-      },
-    ];
-
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(
-            70.0), // Augmentez la hauteur pour donner plus d'espace
-        child: SafeArea(
-          child: AppBar(
-            backgroundColor: Colors.white,
-            elevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.logout, color: Colors.black),
-              onPressed: _logout, // Action pour le bouton de déconnexion
-            ),
-            title: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Trustline Driver',
-                  style: TextStyle(color: Colors.black, fontSize: 20),
-                ),
-                Text(
-                  '1 juillet 2024',
-                  style: TextStyle(color: Colors.grey, fontSize: 14),
-                ),
-              ],
-            ),
-            actions: [
-              badges.Badge(
-                showBadge: true,
-                badgeContent:
-                    const Text('5', style: TextStyle(color: Colors.white)),
-                child: IconButton(
-                  icon: const Icon(Icons.notifications, color: Colors.grey),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                const HotelNotificationsPage()));
-                  },
-                ),
-              ),
-              const SizedBox(width: 16),
-            ],
-          ),
-        ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              CarouselSlider(
-                options: CarouselOptions(
-                  height: 230.0,
-                  autoPlay: true,
-                  enlargeCenterPage: true,
-                  aspectRatio: 16 / 9,
-                  autoPlayInterval: const Duration(seconds: 6),
-                  autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                  autoPlayCurve: Curves.fastOutSlowIn,
-                  pauseAutoPlayOnTouch: true,
-                ),
-                items: [1, 2, 3, 4, 5].map((i) {
-                  return Builder(
-                    builder: (BuildContext context) {
-                      return Container(
-                        width: MediaQuery.of(context).size.width,
-                        margin: const EdgeInsets.symmetric(horizontal: 5.0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.grey,
-                          image: DecorationImage(
-                            image: AssetImage('assets/carousel_image_$i.jpg'),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 50),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 0,
+        title: FutureBuilder<Response>(
+          future: _chauffeurData,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Row(
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CustomContainer(
-                            icon: dashboardItems[0]['icon'],
-                            title: dashboardItems[0]['title'],
-                            count: dashboardItems[0]['count'],
-                            color: dashboardItems[0]['color'],
-                            onTap: dashboardItems[0]['onTap'],
-                            showIconInsteadOfCount: dashboardItems[0][
-                                'showIconInsteadOfCount'], // Ajoutez cette ligne
-                            width: 180, // Spécifiez la largeur ici
-                            height: 180, // Spécifiez la hauteur ici
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: CustomContainer(
-                            icon: dashboardItems[1]['icon'],
-                            title: dashboardItems[1]['title'],
-                            count: dashboardItems[1]['count'],
-                            color: dashboardItems[1]['color'],
-                            onTap: dashboardItems[1]['onTap'],
-                            showIconInsteadOfCount: dashboardItems[1][
-                                'showIconInsteadOfCount'], // Ajoutez cette ligne
-                            width: 180, // Spécifiez la largeur ici
-                            height:180, // Spécifiez la hauteur ici
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    CustomContainerLarge(
-                      icon: dashboardItems[2]['icon'],
-                      title: dashboardItems[2]['title'],
-                      count: dashboardItems[2]['count'],
-                      color: dashboardItems[2]['color'],
-                      onTap: dashboardItems[2]['onTap'],
+                    const CircleAvatar(radius: 20, backgroundColor: Colors.white),
+                    const SizedBox(width: 10),
+                    Container(
+                     
+                      width: 80,
+                      height: 5,
+                      color: Colors.white,
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
+              );
+            } else if (snapshot.hasError) {
+              return const Text('Erreur', style: TextStyle(color: Colors.white));
+            } else if (snapshot.hasData && snapshot.data!.data != null) {
+              var data = snapshot.data!.data;
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProfileScreen(),
+                    ),
+                  );
+                },
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 24,
+                      backgroundImage: NetworkImage(
+                        // 'https://fe4b-102-64-168-107.ngrok-free.app${data['photo']}',
+                        'https://laconciergerie-i-carre.com/testApi${data['photo']}',
+                      ),
+                    ),
+                    const SizedBox(width: 40),
+                    Flexible(
+                      child: Text(
+                        'Bonjour, ${data['first_name']} ${data['last_name']}',
+                        style: const TextStyle(color: Colors.white),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              return const Text('Aucune donnée', style: TextStyle(color: Colors.white));
+            }
+          },
         ),
+        actions: [
+          badges.Badge(
+            showBadge: true,
+            badgeContent: const Text('5', style: TextStyle(color: Colors.white)),
+            child: IconButton(
+              icon: const Icon(Icons.notifications, color: Colors.white),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HotelNotificationsPage(),
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(width: 16),
+        ],
+      ),
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/fondblanc.jpg'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
+            child: Container(
+              color: Colors.black.withOpacity(0.2),
+            ),
+          ),
+          SafeArea(
+            child: IndexedStack(
+              index: _selectedIndex,
+              children: [
+                _buildOverviewPage(),
+                _buildOffersPage(),
+                _buildPlannedPage(),
+                _buildFinishedPage(),
+              ],
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home, color: Colors.black),
+            label: 'Aperçu',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.local_offer, color: Colors.black),
+            label: 'Offres',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.event, color: Colors.black),
+            label: 'Planifié',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.check_circle, color: Colors.black),
+            label: 'Terminé',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.orange,
+        onTap: _onItemTapped,
+      ),
+    );
+  }
+
+  Widget _buildOverviewPage() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildTodayTripSection(),
+            const SizedBox(height: 16),
+            _buildRatingSection(),
+            const SizedBox(height: 16),
+            _buildNewsAndUpdatesSection(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOffersPage() {
+    return const Center(
+      child: Text('Offres Page'),
+    );
+  }
+
+  Widget _buildPlannedPage() {
+    return const Center(
+      child: Text('Planifié Page'),
+    );
+  }
+
+  Widget _buildFinishedPage() {
+    return const Center(
+      child: Text('Terminé Page'),
+    );
+  }
+
+  Widget _buildTodayTripSection() {
+    return FutureBuilder<Response>(
+      future: _todayTrip,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Text('Chargement...', style: TextStyle(color: Colors.black));
+        } else if (snapshot.hasError) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.grey[850],
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Aujourd\'hui, 14:45',
+                  style: TextStyle(color: Colors.white),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Holcim Innovation Center, Rue du Montmurier 95,...',
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'INVITÉ',
+                  style: TextStyle(color: Colors.grey),
+                ),
+                Text(
+                  'Mr Christophe Clemente',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ],
+            ),
+          );
+        } else if (snapshot.hasData && snapshot.data!.data != null) {
+          var data = snapshot.data!.data;
+          return Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.grey[850],
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Aujourd\'hui, ${data['time']}',
+                  style: const TextStyle(color: Colors.white),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '${data['location']}',
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'INVITÉ',
+                  style: TextStyle(color: Colors.grey),
+                ),
+                Text(
+                  '${data['guest']}',
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ],
+            ),
+          );
+        } else {
+          return const Text('Aucune donnée', style: TextStyle(color: Colors.black));
+        }
+      },
+    );
+  }
+
+  Widget _buildRatingSection() {
+    return FutureBuilder<Response>(
+      future: _rating,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Text('Chargement...', style: TextStyle(color: Colors.black));
+        } else if (snapshot.hasError) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.grey[850],
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Évaluation',
+                  style: TextStyle(color: Colors.white),
+                ),
+                Row(
+                  children: [
+                    Text(
+                      '4.00',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    Icon(Icons.star, color: Colors.yellow),
+                  ],
+                ),
+              ],
+            ),
+          );
+        } else if (snapshot.hasData && snapshot.data!.data != null) {
+          var data = snapshot.data!.data;
+          return Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.grey[850],
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Évaluation',
+                  style: TextStyle(color: Colors.white),
+                ),
+                Row(
+                  children: [
+                    Text(
+                      '${data['rating']}',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    const Icon(Icons.star, color: Colors.yellow),
+                  ],
+                ),
+              ],
+            ),
+          );
+        } else {
+          return const Text('Aucune donnée', style: TextStyle(color: Colors.black));
+        }
+      },
+    );
+  }
+
+  Widget _buildNewsAndUpdatesSection() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey[850],
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: const Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Nouvelles et mises à jour',
+            style: TextStyle(color: Colors.white),
+          ),
+          Icon(Icons.arrow_forward, color: Colors.orange),
+        ],
       ),
     );
   }

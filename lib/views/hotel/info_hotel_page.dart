@@ -1,137 +1,201 @@
 import 'package:flutter/material.dart';
-import 'package:trust_reservation_second/constants/colors_app.dart';
+import 'package:trust_reservation_second/services/user_service.dart';
 import 'package:trust_reservation_second/views/hotel/configuration_hotel.dart';
 import 'package:trust_reservation_second/views/hotel/listes_receptionnists.dart';
 import 'package:trust_reservation_second/widgets/rectangle_button.dart';
+import 'package:trust_reservation_second/services/local_storage.dart';
+import 'package:trust_reservation_second/constants/colors_app.dart';
 
-class InfoHotel extends StatelessWidget {
+class InfoHotel extends StatefulWidget {
   const InfoHotel({super.key});
+
+  @override
+  _InfoHotelState createState() => _InfoHotelState();
+}
+
+class _InfoHotelState extends State<InfoHotel> {
+  final UserService _userService = UserService();
+  late Future<Map<String, dynamic>> _hotelInfo;
+
+  @override
+  void initState() {
+    super.initState();
+    _hotelInfo = _fetchHotelInfo();
+  }
+
+  Future<Map<String, dynamic>> _fetchHotelInfo() async {
+    try {
+      final specificId = await LocalStorageService.getData('specific_id');
+      if (specificId == null) throw Exception('Specific ID not found');
+      
+      final response = await _userService.getHotelInfo(specificId);
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        throw Exception('Failed to load hotel info');
+      }
+    } catch (e) {
+      throw Exception('Failed to load hotel info: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Column(
-            children: [
-              Image.asset(
-                'assets/hotel.jpg', // Utilisation de l'image depuis les assets
-                height: MediaQuery.of(context).size.height /
-                    2, // Moitié de la hauteur de l'écran
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-              Container(
-                height: MediaQuery.of(context).size.height /
-                    2, // Moitié de la hauteur de l'écran
-                color: Colors.grey[300], // Couleur de fond gris clair
-              ),
-            ],
-          ),
-          Positioned(
-            top: MediaQuery.of(context).size.height / 2 -
-                50, // Position du premier container pour qu'il soit sur l'image
-            left: 16,
-            right: 16,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10), // Bords arrondis
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 10,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Golden Ocean Hotel',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: ColorsApp.primaryColor,
+      body: FutureBuilder<Map<String, dynamic>>(
+        future: _hotelInfo,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            final hotelInfo = snapshot.data!;
+
+            return Stack(
+              children: [
+                Column(
+                  children: [
+                    Image.asset(
+                      'assets/hotel.jpg',
+                      height: MediaQuery.of(context).size.height / 2,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                    Container(
+                      height: MediaQuery.of(context).size.height / 2,
+                      color: Colors.grey[300],
+                    ),
+                  ],
+                ),
+                Positioned(
+                  top: MediaQuery.of(context).size.height / 2 - 70,
+                  left: 16,
+                  right: 16,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          hotelInfo['nom'] ?? 'Nom de l\'hôtel',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: ColorsApp.primaryColor,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          hotelInfo['adresse'] ?? 'Adresse de l\'hôtel',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          hotelInfo['description'] ?? 'Description de l\'hôtel',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Email: ${hotelInfo['email'] ?? 'N/A'}',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Téléphone: ${hotelInfo['telephone'] ?? 'N/A'}',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Site Web: ${hotelInfo['site_web'] ?? 'N/A'}',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Entreprise: ${hotelInfo['entreprise'] ?? 'N/A'}',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Al Meena St, Doha, Qatar',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[600],
+                ),
+                Positioned(
+                  top: MediaQuery.of(context).size.height - 241,
+                  left: 16,
+                  right: 16,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 8,
+                          offset: Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            RectangleButton(
+                              onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const ConfigurationHotel())),
+                              buttonText: '',
+                              buttonColor: ColorsApp.primaryColor,
+                              textColor: Colors.white,
+                              buttonWidth:
+                                  MediaQuery.of(context).size.width / 3,
+                              icon: Icons.settings,
+                              iconColor: Colors.white,
+                            ),
+                            RectangleButton(
+                              onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          ListesReceptionnists())),
+                              buttonText: '',
+                              buttonColor: ColorsApp.primaryColor,
+                              textColor: Colors.white,
+                              buttonWidth:
+                                  MediaQuery.of(context).size.width / 3,
+                              icon: Icons.info,
+                              iconColor: Colors.white,
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 1),
-                  const Text(
-                    'Located just 1 km from the corniche, the property offers a temperature controlled rooftop pool with amazing views of Doha skyline and the corniche. Free WiFi is available throughout the entire property.',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 1),
-                ],
-              ),
-            ),
-          ),
-          Positioned(
-            top: MediaQuery.of(context).size.height -
-                250, // Position du deuxième container en bas, mais ne touche pas complètement le bas
-            left: 16,
-            right: 16,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10), // Bords arrondis
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 10,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      RectangleButton(
-                        // onPressed : () => Navigator.push(context, MaterialPageRoute(builder: (context) => const AdminAuth())),
-                        onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const ConfigurationHotel())),
-                        buttonText: '',
-                        buttonColor: ColorsApp.primaryColor,
-                        textColor: Colors.white,
-                        buttonWidth: MediaQuery.of(context).size.width / 3,
-                        icon: Icons.settings,
-                        iconColor: Colors.white,
-                      ),
-                      RectangleButton(
-                        onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ListesReceptionnists())),
-                        buttonText: '',
-                        buttonColor: ColorsApp.primaryColor,
-                        textColor: Colors.white,
-                        buttonWidth: MediaQuery.of(context).size.width / 3,
-                        icon: Icons.info,
-                        iconColor: Colors.white,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+                ),
+              ],
+            );
+          } else {
+            return Center(child: Text('No data'));
+          }
+        },
       ),
     );
   }

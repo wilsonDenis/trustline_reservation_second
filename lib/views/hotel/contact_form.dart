@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:trust_reservation_second/widgets/custom_button.dart';
 
-class ContactForm extends StatelessWidget {
-  final VoidCallback onContactSubmitted;
+// Définit un typedef pour la fonction de soumission de contact
+typedef ContactSubmittedCallback = void Function(String name, String phone, String email);
 
-  const ContactForm({Key? key, required this.onContactSubmitted})
-      : super(key: key);
+class ContactForm extends StatelessWidget {
+  final ContactSubmittedCallback onContactSubmitted;
+
+  const ContactForm({Key? key, required this.onContactSubmitted}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +40,15 @@ class ContactForm extends StatelessWidget {
             const SizedBox(height: 16),
             CustomButton(
               onPressed: () {
-                onContactSubmitted();
+                // Appelle la fonction de rappel avec les valeurs des contrôleurs de texte
+                onContactSubmitted(
+                  _nameController.text,
+                  _phoneController.text,
+                  _emailController.text,
+                );
               },
-              text: 'Soumettre', backgroundColor: Colors.blue,
+              text: 'Soumettre',
+              backgroundColor: Colors.blue,
             ),
           ],
         ),

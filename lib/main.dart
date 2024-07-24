@@ -4,15 +4,13 @@ import 'package:provider/provider.dart';
 import 'package:trust_reservation_second/models/notification_model.dart';
 import 'package:trust_reservation_second/services/notification_service.dart';
 import 'package:trust_reservation_second/views/admin/admin_auth.dart';
-import 'package:trust_reservation_second/views/auth_screen.dart';
-import 'package:trust_reservation_second/views/chauffeur/autocomp.dart';
+import 'package:trust_reservation_second/views/reset_password_screen.dart';
 import 'package:trust_reservation_second/views/chauffeur/chauffeur_dashboard.dart';
 import 'package:trust_reservation_second/views/hotel/add_receptionist_screen.dart';
 import 'package:trust_reservation_second/views/hotel/create_reservation.dart';
 import 'package:trust_reservation_second/views/hotel/hotel_dashboard.dart';
 import 'package:trust_reservation_second/views/hotel/info_hotel_page.dart';
 import 'package:trust_reservation_second/views/login_screen.dart';
-import 'package:trust_reservation_second/views/resset_password_screen.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:trust_reservation_second/views/splashscreen.dart';
 
@@ -35,13 +33,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Hotel Management',
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white, // Définit le fond blanc pour toutes les pages
         primarySwatch: Colors.blue,
-      ).copyWith(
+    ).copyWith(
         pageTransitionsTheme: const PageTransitionsTheme(
           builders: <TargetPlatform, PageTransitionsBuilder>{
             TargetPlatform.android: ZoomPageTransitionsBuilder(),
@@ -60,8 +59,7 @@ class MyApp extends StatelessWidget {
       home: const SplashScreen(),
       // home: const HotelDashboard(),
       routes: {
-        '/authscreen': (context) => const AuthScreen(),
-        '/registerscreen': (context) => const ResetPasswordScreen(),
+        '/resetpasswordscreen': (context) => const ResetPasswordScreen(),
         '/loginscreen': (context) => const LoginScreen(),
         '/hoteldashboard': (context) => const HotelDashboard(),
         '/adminauth': (context) => const AdminAuth(),

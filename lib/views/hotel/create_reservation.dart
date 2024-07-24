@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trust_reservation_second/constants/colors_app.dart';
-import 'package:trust_reservation_second/services/location_service.dart';
+import 'package:trust_reservation_second/services/reservation_service.dart';
 import 'package:trust_reservation_second/views/hotel/contact_form.dart';
 import 'package:trust_reservation_second/views/hotel/payement_selection.dart';
 import 'package:trust_reservation_second/views/hotel/voiture_choice.dart';
 import 'package:trust_reservation_second/widgets/custom_button.dart';
+import 'package:trust_reservation_second/widgets/reservation_widgets.dart'; // Import des widgets
 
 class CreateReservation extends StatefulWidget {
   const CreateReservation({super.key});
@@ -17,6 +16,7 @@ class CreateReservation extends StatefulWidget {
 
 class _CreateReservationState extends State<CreateReservation> {
   final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _destinationController = TextEditingController();
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
   bool isDefaultAddress = true;
@@ -26,309 +26,204 @@ class _CreateReservationState extends State<CreateReservation> {
   String _name = '';
   String _phone = '';
   String _email = '';
+  String _estimation = '';
+  String _distParcourt = '';
+  String _durParcourt = '';
+
+  List<dynamic> _vehicles = [];
+  List<dynamic> _paymentMethods = [];
+
+  final ReservationService _reservationService = ReservationService();
 
   @override
   void initState() {
     super.initState();
-    _loadAddresses();
+    _reservationService.loadAddresses(_addressController);
+    _reservationService.getCurrentLocation(_addressController);
+    _addressController.addListener(_calculateEstimation);
+    _destinationController.addListener(_calculateEstimation);
+    _loadVehicles();
+    _loadPaymentMethods();
   }
 
   @override
   void dispose() {
+    _addressController.removeListener(_calculateEstimation);
+    _destinationController.removeListener(_calculateEstimation);
     _addressController.dispose();
+    _destinationController.dispose();
     super.dispose();
   }
 
-  Future<void> _loadAddresses() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _addressController.text =
-          prefs.getString('default_address') ?? 'Adresse de départ';
-    });
-  }
-
-  void _swapAddress() {
-    setState(() {
-      isDefaultAddress = !isDefaultAddress;
-      _addressController.text =
-          isDefaultAddress ? 'Adresse de départ' : 'Adresse d\'arrivée';
-    });
-  }
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2101),
-      locale: const Locale('fr', 'FR'),
+  void _calculateEstimation() {
+    _reservationService.calculateEstimation(
+      _selectedDate,
+      _selectedTime,
+      _addressController,
+      _destinationController,
+      (distParcourt, durParcourt, estimation) {
+        setState(() {
+          _distParcourt = distParcourt;
+          _durParcourt = durParcourt;
+          _estimation = estimation;
+        });
+      },
     );
-    if (pickedDate != null && pickedDate != _selectedDate) {
-      setState(() {
-        _selectedDate = pickedDate;
-      });
-    }
   }
 
-  Future<void> _selectTime(BuildContext context) async {
-    final TimeOfDay? pickedTime = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
+  void _handleContactSubmitted(String name, String phone, String email) {
+    setState(() {
+      _name = name;
+      _phone = phone;
+      _email = email;
+    });
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PaymentSelection(
+          onPaymentCompleted: () {
+            setState(() {
+              _currentStep = 3;
+            });
+            Navigator.popUntil(context, (route) => route.isFirst);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const CreateReservation(),
+              ),
+            );
+          },
+        ),
+      ),
     );
-    if (pickedTime != null && pickedTime != _selectedTime) {
-      setState(() {
-        _selectedTime = pickedTime;
-      });
-    }
   }
 
-  void _continue() {
+  void _continue() async {
     if (_currentStep < 3) {
       if (_currentStep == 2) {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => VoitureChoice(onCarSelected: (car) {
-                    setState(() {
-                      _selectedVehicle = car;
-                    });
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              ContactForm(onContactSubmitted: () {
-                                setState(() {
-                                  _name =
-                                      ""; // Assuming you want to set default values or handle them differently
-                                  _phone = "";
-                                  _email = "";
-                                });
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => PaymentSelection(
-                                              onPaymentCompleted: () {
-                                            setState(() {
-                                              _currentStep = 3;
-                                            });
-                                            Navigator.popUntil(context,
-                                                (route) => route.isFirst);
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      const CreateReservation()),
-                                            );
-                                          })),
-                                );
-                              })),
-                    );
-                  })),
+            builder: (context) => VoitureChoice(
+              onCarSelected: (car) {
+                setState(() {
+                  _selectedVehicle = car;
+                });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ContactForm(
+                      onContactSubmitted: (name, phone, email) {
+                        _handleContactSubmitted(name, phone, email);
+                      },
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
         );
       } else {
         setState(() {
           _currentStep += 1;
         });
       }
+
+      await _reservationService.saveReservationData(
+        _currentStep,
+        _addressController.text,
+        _destinationController.text,
+        _selectedDate,
+        _selectedTime,
+        context,
+      );
     } else {
       // Handle form submission
     }
   }
 
-  void _cancel() {
+  void _cancel() async {
     if (_currentStep > 0) {
       setState(() {
         _currentStep -= 1;
       });
+      await _reservationService.removeReservationData();
+    }
+  }
+
+  void _loadVehicles() async {
+    try {
+      final vehicles = await _reservationService.getVehicules();
+      setState(() {
+        _vehicles = vehicles;
+      });
+    } catch (e) {
+      // Gérer l'erreur
+    }
+  }
+
+  void _loadPaymentMethods() async {
+    try {
+      final methods = await _reservationService.getPaymentMethods();
+      setState(() {
+        _paymentMethods = methods;
+      });
+    } catch (e) {
+      // Gérer l'erreur
     }
   }
 
   List<Widget> _getStepContents(BuildContext context) {
     return [
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: () => _selectDate(context),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 16, horizontal: 20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.grey),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Date',
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                        Text(
-                          _selectedDate != null
-                              ? DateFormat.yMMMMd('fr_FR')
-                                  .format(_selectedDate!)
-                              : 'date',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: GestureDetector(
-                  onTap: () => _selectTime(context),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 16, horizontal: 20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.grey),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Heure',
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                        Text(
-                          _selectedTime != null
-                              ? _selectedTime!.format(context)
-                              : 'heure',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.grey),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.location_on, size: 20),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Autocomplete<Place>(
-                      optionsBuilder: (TextEditingValue textEditingValue) {
-                        if (textEditingValue.text == '') {
-                          return const Iterable<Place>.empty();
-                        }
-                        return LocationService.getSuggestions(
-                                textEditingValue.text)
-                            .then((suggestions) => suggestions);
-                      },
-                      displayStringForOption: (Place option) => option.description,
-                      onSelected: (Place selection) {
-                        setState(() {
-                          _addressController.text =
-                              selection.description;
-                        });
-                      },
-                      fieldViewBuilder: (
-                        BuildContext context,
-                        TextEditingController fieldTextEditingController,
-                        FocusNode fieldFocusNode,
-                        VoidCallback onFieldSubmitted,
-                      ) {
-                        return TextFormField(
-                          controller: fieldTextEditingController,
-                          focusNode: fieldFocusNode,
-                          onFieldSubmitted: (String value) {
-                            onFieldSubmitted();
-                          },
-                          decoration: const InputDecoration(
-                            labelText: 'Adresse de départ',
-                            // prefixIcon: Icon(Icons.location_on),
-                            border: InputBorder.none, // Supprimer la bordure
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.swap_horiz,
-                        color: ColorsApp.primaryColor),
-                    onPressed: _swapAddress,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+      buildDateTimeSelectionStep(
+        context,
+        _selectedDate,
+        _selectedTime,
+        _addressController,
+        _destinationController,
+        isDefaultAddress,
+        _estimation,
+        _distParcourt,
+        _durParcourt,
+        (pickedDate) {
+          setState(() {
+            _selectedDate = pickedDate;
+          });
+          _calculateEstimation();
+        },
+        (pickedTime) {
+          setState(() {
+            _selectedTime = pickedTime;
+          });
+          _calculateEstimation();
+        },
+        () {
+          _calculateEstimation();
+        },
+        () {
+          _calculateEstimation();
+        },
+        () {
+          _reservationService.swapAddress(
+            _addressController,
+            _destinationController,
+            isDefaultAddress,
+            _calculateEstimation,
+          );
+          setState(() {
+            isDefaultAddress = !isDefaultAddress;
+          });
+        },
       ),
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Type de véhicule'),
-          DropdownButton<String>(
-            isExpanded: true,
-            value: 'Van',
-            items: <String>['Van', 'Car', 'Bike'].map((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-            onChanged: (value) {},
-          ),
-          const SizedBox(height: 16),
-          const Text('Passagers'),
-          DropdownButton<int>(
-            isExpanded: true,
-            value: 0,
-            items: List.generate(10, (index) => index).map((int value) {
-              return DropdownMenuItem<int>(
-                value: value,
-                child: Text(value.toString()),
-              );
-            }).toList(),
-            onChanged: (value) {},
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            decoration: const InputDecoration(
-              labelText: 'Autre chose à ajouter?',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-              ),
-            ),
-          ),
-        ],
+      buildVehicleSelectionStep(
+        _vehicles,
+        (vehicleType) {
+          setState(() {
+            _selectedVehicle = vehicleType;
+          });
+        },
       ),
-      const Center(
-        child: Text('Informations supplémentaires...'),
-      ),
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Véhicule sélectionné: $_selectedVehicle'),
-          Text('Nom: $_name'),
-          Text('Téléphone: $_phone'),
-          Text('Email: $_email'),
-        ],
-      ),
+      // Add other steps here...
     ];
   }
 
@@ -425,8 +320,7 @@ class _CreateReservationState extends State<CreateReservation> {
                         Center(
                           child: Text(
                             'Étape ${_currentStep + 1}',
-                            style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -437,9 +331,8 @@ class _CreateReservationState extends State<CreateReservation> {
                             Expanded(
                               child: CustomButton(
                                 onPressed: _continue,
-                                text: _currentStep == 3
-                                    ? 'Confirmer'
-                                    : 'Continuer', backgroundColor: Colors.blue,
+                                text: _currentStep == 3 ? 'Confirmer' : 'Continuer',
+                                backgroundColor: Colors.blue,
                               ),
                             ),
                             const SizedBox(width: 8),

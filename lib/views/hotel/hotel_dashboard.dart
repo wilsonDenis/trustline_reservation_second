@@ -131,10 +131,10 @@ class _HotelDashboardState extends State<HotelDashboard> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              const SizedBox(height: 20),
+              const SizedBox(height: 30),
               CarouselSlider(
                 options: CarouselOptions(
-                  height: 200.0,
+                  height: 250.0,
                   autoPlay: true,
                   enlargeCenterPage: true,
                   aspectRatio: 16 / 9,
@@ -162,7 +162,7 @@ class _HotelDashboardState extends State<HotelDashboard> {
                   );
                 }).toList(),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 25),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: GridView.builder(

@@ -7,7 +7,6 @@ import 'package:trust_reservation_second/views/chauffeur/chauffeur_dashboard.dar
 import 'package:trust_reservation_second/views/hotel/hotel_dashboard.dart';
 import 'package:trust_reservation_second/widgets/custom_text_form_field.dart';
 
-
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -49,18 +48,28 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     _animationController.dispose();
     super.dispose();
   }
-
+  // Méthode pour gérer la connexion
   Future<void> _login() async {
     if (formKey.currentState!.validate()) {
       final email = txtEmail.text;
       final password = txtPassword.text;
-      final response = await AuthService().login({'email_ou_telephone': email, 'passCode': password});
+      final response = await AuthService()
+          .login({'email_ou_telephone': email, 'passCode': password});
 
-      if (response.statusCode == 200) {
-        final data = response.data; // Utilisation de response.data au lieu de response.body
-        final userType = data['user_type'];
-        await LocalStorageService.saveData('user_type', userType);
+      // ignore: unnecessary_null_comparison
+      if (response != null && response.statusCode == 200) {
+        // Si la connexion a réussi
+        final data = response.data;
+        final userType = data['user_type'] ?? '';
 
+        // Enregistrer les informations utilisateur dans le stockage local
+        await LocalStorageService.saveData('user_id', data['user_id'] ?? -1);
+        await LocalStorageService.saveData('user_type', data['user_type'] ?? '');
+        await LocalStorageService.saveData('specific_id', data['specific_id'] ?? -1);
+        await LocalStorageService.saveData('token', data['jwt'] ?? '');
+        await LocalStorageService.saveData('refresh', data['refresh'] ?? '');
+
+        // Naviguer vers le dashboard en fonction du type d'utilisateur
         switch (userType) {
           case 'administrateur':
             _navigateToDashboard(const AdminDashboard());
@@ -80,6 +89,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
       }
     }
   }
+
+
 
   void _navigateToDashboard(Widget dashboard) {
     if (mounted) {
@@ -159,11 +170,13 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                         children: [
                           const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text(
-                              'Connexion',
-                              style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
+                            child: Center(
+                              child: Text(
+                                'Connexion',
+                                style: TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
@@ -196,7 +209,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                             alignment: Alignment.centerRight,
                             child: TextButton(
                               onPressed: () {
-                                Navigator.pushNamed(context, '/registerscreen');
+                                Navigator.pushNamed(context, '/resetpasswordscreen');
                               },
                               child: const Text('Mot de passe oublié ?', style: TextStyle(color: Colors.grey)),
                             ),
