@@ -4,9 +4,10 @@ import 'package:trust_reservation_second/constants/colors_app.dart';
 import 'package:trust_reservation_second/services/location_service.dart';
 import 'package:trust_reservation_second/widgets/custom_button.dart';
 
+
 Widget buildVehicleSelectionStep(
   List<dynamic> vehicles,
-  Function(String) onVehicleSelected,
+  ValueChanged<String> onVehicleSelected,
 ) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,7 +41,7 @@ Widget buildVehicleOption(
   String fuel,
   String price,
   String imagePath,
-  Function(String) onVehicleSelected,
+  ValueChanged<String> onVehicleSelected,
 ) {
   return Container(
     margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0),
@@ -84,11 +85,11 @@ Widget buildDateTimeSelectionStep(
   String estimation,
   String distParcourt,
   String durParcourt,
-  Function(DateTime) onDateSelected,
-  Function(TimeOfDay) onTimeSelected,
-  Function onAddressSelected,
-  Function onDestinationSelected,
-  Function swapAddress,
+  ValueChanged<DateTime> onDateSelected,
+  ValueChanged<TimeOfDay> onTimeSelected,
+  VoidCallback onAddressSelected,
+  VoidCallback onDestinationSelected,
+  VoidCallback swapAddress,
 ) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,7 +98,17 @@ Widget buildDateTimeSelectionStep(
         children: [
           Expanded(
             child: GestureDetector(
-              onTap: () => onDateSelected(selectedDate!),
+              onTap: () async {
+                final DateTime? pickedDate = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime(2101),
+                );
+                if (pickedDate != null) {
+                  onDateSelected(pickedDate);
+                }
+              },
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                 decoration: BoxDecoration(
@@ -122,7 +133,15 @@ Widget buildDateTimeSelectionStep(
           const SizedBox(width: 16),
           Expanded(
             child: GestureDetector(
-              onTap: () => onTimeSelected(selectedTime!),
+              onTap: () async {
+                final TimeOfDay? pickedTime = await showTimePicker(
+                  context: context,
+                  initialTime: TimeOfDay.now(),
+                );
+                if (pickedTime != null) {
+                  onTimeSelected(pickedTime);
+                }
+              },
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                 decoration: BoxDecoration(
@@ -203,7 +222,7 @@ Widget buildDateTimeSelectionStep(
             padding: const EdgeInsets.only(left: 16),
             child: IconButton(
               icon: const Icon(Icons.swap_horiz, color: ColorsApp.primaryColor),
-              onPressed: () => swapAddress(),
+              onPressed: swapAddress,
             ),
           ),
         ],
@@ -312,4 +331,124 @@ Widget buildDateTimeSelectionStep(
       ],
     ],
   );
+}
+
+Widget buildStep3Content(
+  List<int> passengerOptions,
+  List<int> baggageOptions,
+  List<String> paymentMethods,
+  String? selectedPassengerCount,
+  String? selectedBaggageCount,
+  String? selectedPaymentMethod,
+  TextEditingController flightTrainNumberController,
+  TextEditingController caseNumberController,
+  TextEditingController notesController,
+  ValueChanged<String?> onPassengerCountChanged,
+  ValueChanged<String?> onBaggageCountChanged,
+  ValueChanged<String?> onPaymentMethodChanged,
+) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const Center(
+        child: Text(
+          'Choisir un véhicule',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+      ),
+      const SizedBox(height: 16),
+      DropdownButtonFormField<String>(
+        decoration: const InputDecoration(labelText: 'Nombre de passagers'),
+        value: passengerOptions.contains(int.tryParse(selectedPassengerCount ?? '')) 
+            ? selectedPassengerCount 
+            : null,
+        items: passengerOptions
+            .map((count) => DropdownMenuItem(
+                  value: count.toString(),
+                  child: Text(count.toString()),
+                ))
+            .toList(),
+        onChanged: onPassengerCountChanged,
+      ),
+      const SizedBox(height: 16),
+      DropdownButtonFormField<String>(
+        decoration: const InputDecoration(labelText: 'Nombre de bagages'),
+        value: baggageOptions.contains(int.tryParse(selectedBaggageCount ?? '')) 
+            ? selectedBaggageCount 
+            : null,
+        items: baggageOptions
+            .map((count) => DropdownMenuItem(
+                  value: count.toString(),
+                  child: Text(count.toString()),
+                ))
+            .toList(),
+        onChanged: onBaggageCountChanged,
+      ),
+      const SizedBox(height: 16),
+      DropdownButtonFormField<String>(
+        decoration: const InputDecoration(labelText: 'Méthode de paiement'),
+        value: paymentMethods.contains(selectedPaymentMethod) 
+            ? selectedPaymentMethod 
+            : null,
+        items: paymentMethods
+            .map((method) => DropdownMenuItem(
+                  value: method,
+                  child: Text(_formatPaymentMethodName(method)),
+                ))
+            .toList(),
+        onChanged: onPaymentMethodChanged,
+      ),
+      const SizedBox(height: 16),
+      TextFormField(
+        controller: flightTrainNumberController,
+        decoration: const InputDecoration(
+          labelText: 'Numéro de vol/train',
+          hintText: 'Entrez le numéro de vol ou de train',
+        ),
+      ),
+      const SizedBox(height: 8),
+      const Text(
+        'Laissez le champ vide si vous n\'avez pas pris de vol ou de train',
+        style: TextStyle(color: Colors.orange),
+      ),
+      const SizedBox(height: 16),
+      TextFormField(
+        controller: caseNumberController,
+        decoration: const InputDecoration(
+          labelText: 'Numéro de dossier',
+          hintText: 'Entrez le numéro de dossier',
+        ),
+      ),
+      const SizedBox(height: 8),
+      const Text(
+        'Laissez le champ vide si vous n\'avez pas de numéro de dossier',
+        style: TextStyle(color: Colors.orange),
+      ),
+      const SizedBox(height: 16),
+      TextFormField(
+        controller: notesController,
+        decoration: const InputDecoration(
+          labelText: 'Notes',
+          hintText: 'Votre note',
+        ),
+      ),
+    ],
+  );
+}
+
+String _formatPaymentMethodName(String method) {
+  switch (method) {
+    case 'payement_paypal':
+      return 'Paiement par PayPal';
+    case 'payement_stripe':
+      return 'Paiement par Stripe';
+    case 'payement_abord':
+      return 'Paiement à bord (espèce ou CB)';
+    case 'payement_virement':
+      return 'Paiement par virement bancaire';
+    case 'payment_en_compte':
+      return 'Paiement en compte';
+    default:
+      return method;
+  }
 }

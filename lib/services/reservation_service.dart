@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trust_reservation_second/services/local_storage.dart';
@@ -22,7 +24,7 @@ class ReservationService {
     TextEditingController addressController,
     TextEditingController destinationController,
     bool isDefaultAddress,
-    Function calculateEstimation,
+    VoidCallback calculateEstimation,
   ) {
     isDefaultAddress = !isDefaultAddress;
     addressController.text = isDefaultAddress ? 'Adresse de départ' : '';
@@ -30,7 +32,7 @@ class ReservationService {
     calculateEstimation();
   }
 
-  Future<void> selectDate(BuildContext context, Function(DateTime) onDateSelected) async {
+  Future<void> selectDate(BuildContext context, ValueChanged<DateTime> onDateSelected) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -43,7 +45,7 @@ class ReservationService {
     }
   }
 
-  Future<void> selectTime(BuildContext context, Function(TimeOfDay) onTimeSelected) async {
+  Future<void> selectTime(BuildContext context, ValueChanged<TimeOfDay> onTimeSelected) async {
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
@@ -152,37 +154,50 @@ class ReservationService {
       throw Exception('Failed to load vehicles');
     }
   }
-
-  Future<List<dynamic>> getPaymentMethods() async {
-    final response = await _apiService.getData('/gve/methodes/');
-    if (response.statusCode == 200) {
-      return response.data
-          .where((method) => method['is_active'])
-          .map((method) => {
-                'nom': method['nom'],
-                'label': _formatPaymentMethodName(method['nom']),
-                'description': method['description']
-              })
-          .toList();
-    } else {
-      throw Exception('Failed to load payment methods');
+Future<List<dynamic>> getPaymentMethods() async {
+  final response = await _apiService.getData('/setting/methodes/');
+  
+  if (kDebugMode) {
+    print('----------------Response status code: ${response.statusCode}');
+    print('-------------Response data: ${response.data}');
+  }
+  
+  if (response.statusCode == 200) {
+    final activeMethods = response.data.where((method) => method['is_active'] == true).toList();
+    
+    if (kDebugMode) {
+      print('---------------------Active methods: $activeMethods');
     }
+    
+    final paymentMethods = activeMethods.map((method) => {
+      'nom': method['nom'],
+      'label': method['nom'], // Plus besoin de formater ici
+      'description': method['description'],
+    }).toList();
+    
+    if (kDebugMode) {
+      print('Payment methods: $paymentMethods');
+    }
+    
+    return paymentMethods;
+  } else {
+    throw Exception('Failed to load payment methods');
+  }
+}
+  // Nouvelles fonctionnalités ajoutées
+  Future<Response> createClient(Map<String, dynamic> data) async {
+    return await _apiService.postData('/auth/register/', data);
   }
 
-  String _formatPaymentMethodName(String method) {
-    switch (method) {
-      case 'payement_paypal':
-        return 'Paiement par PayPal';
-      case 'payement_stripe':
-        return 'Paiement par Stripe';
-      case 'payement_abord':
-        return 'Paiement à bord (espèce ou CB)';
-      case 'payement_virement':
-        return 'Paiement par virement bancaire';
-      case 'payment_en_compte':
-        return 'Paiement en compte';
-      default:
-        return method;
-    }
+  Future<Response> getClient(int clientId) async {
+    return await _apiService.getData('/auth/clients/$clientId/');
+  }
+
+  Future<Response> createReservation(Map<String, dynamic> data) async {
+    return await _apiService.postData('/reservation/create/', data);
+  }
+
+  Future<Response> getReservation(int reservationId) async {
+    return await _apiService.getData('/reservation/$reservationId/');
   }
 }

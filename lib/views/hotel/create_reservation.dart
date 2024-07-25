@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:trust_reservation_second/constants/colors_app.dart';
 import 'package:trust_reservation_second/services/reservation_service.dart';
@@ -6,6 +7,7 @@ import 'package:trust_reservation_second/views/hotel/payement_selection.dart';
 import 'package:trust_reservation_second/views/hotel/voiture_choice.dart';
 import 'package:trust_reservation_second/widgets/custom_button.dart';
 import 'package:trust_reservation_second/widgets/reservation_widgets.dart'; // Import des widgets
+
 
 class CreateReservation extends StatefulWidget {
   const CreateReservation({super.key});
@@ -17,6 +19,10 @@ class CreateReservation extends StatefulWidget {
 class _CreateReservationState extends State<CreateReservation> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _destinationController = TextEditingController();
+  final TextEditingController _flightTrainNumberController = TextEditingController();
+  final TextEditingController _caseNumberController = TextEditingController();
+  final TextEditingController _notesController = TextEditingController();
+
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
   bool isDefaultAddress = true;
@@ -30,8 +36,12 @@ class _CreateReservationState extends State<CreateReservation> {
   String _distParcourt = '';
   String _durParcourt = '';
 
+  String _selectedPassengerCount = '';
+  String _selectedBaggageCount = '';
+  String? _selectedPaymentMethod;
+
   List<dynamic> _vehicles = [];
-  List<dynamic> _paymentMethods = [];
+  List<String> _paymentMethods = []; // Définir comme List<String>
 
   final ReservationService _reservationService = ReservationService();
 
@@ -44,6 +54,7 @@ class _CreateReservationState extends State<CreateReservation> {
     _destinationController.addListener(_calculateEstimation);
     _loadVehicles();
     _loadPaymentMethods();
+    _selectedPaymentMethod = null; // Initialiser avec null ou une valeur existante
   }
 
   @override
@@ -56,19 +67,24 @@ class _CreateReservationState extends State<CreateReservation> {
   }
 
   void _calculateEstimation() {
-    _reservationService.calculateEstimation(
-      _selectedDate,
-      _selectedTime,
-      _addressController,
-      _destinationController,
-      (distParcourt, durParcourt, estimation) {
-        setState(() {
-          _distParcourt = distParcourt;
-          _durParcourt = durParcourt;
-          _estimation = estimation;
-        });
-      },
-    );
+    if (_selectedDate != null &&
+        _selectedTime != null &&
+        _addressController.text.isNotEmpty &&
+        _destinationController.text.isNotEmpty) {
+      _reservationService.calculateEstimation(
+        _selectedDate,
+        _selectedTime,
+        _addressController,
+        _destinationController,
+        (distParcourt, durParcourt, estimation) {
+          setState(() {
+            _distParcourt = distParcourt;
+            _durParcourt = durParcourt;
+            _estimation = estimation;
+          });
+        },
+      );
+    }
   }
 
   void _handleContactSubmitted(String name, String phone, String email) {
@@ -163,15 +179,21 @@ class _CreateReservationState extends State<CreateReservation> {
   }
 
   void _loadPaymentMethods() async {
-    try {
-      final methods = await _reservationService.getPaymentMethods();
-      setState(() {
-        _paymentMethods = methods;
-      });
-    } catch (e) {
-      // Gérer l'erreur
+  try {
+    final methods = await _reservationService.getPaymentMethods();
+    setState(() {
+      _paymentMethods = methods.map((method) => method['nom'].toString()).toList();
+      if (_paymentMethods.isNotEmpty) {
+        _selectedPaymentMethod = _paymentMethods.first;
+      }
+    });
+  } catch (e) {
+    // Gérer l'erreur
+    if (kDebugMode) {
+      print('Erreur lors du chargement des méthodes de paiement : $e');
     }
   }
+}
 
   List<Widget> _getStepContents(BuildContext context) {
     return [
@@ -197,12 +219,8 @@ class _CreateReservationState extends State<CreateReservation> {
           });
           _calculateEstimation();
         },
-        () {
-          _calculateEstimation();
-        },
-        () {
-          _calculateEstimation();
-        },
+        _calculateEstimation,
+        _calculateEstimation,
         () {
           _reservationService.swapAddress(
             _addressController,
@@ -223,7 +241,32 @@ class _CreateReservationState extends State<CreateReservation> {
           });
         },
       ),
-      // Add other steps here...
+      buildStep3Content(
+        [1, 2, 3, 4],
+        [1, 2, 3, 4],
+        _paymentMethods,
+        _selectedPassengerCount,
+        _selectedBaggageCount,
+        _selectedPaymentMethod,
+        _flightTrainNumberController,
+        _caseNumberController,
+        _notesController,
+        (value) {
+          setState(() {
+            _selectedPassengerCount = value!;
+          });
+        },
+        (value) {
+          setState(() {
+            _selectedBaggageCount = value!;
+          });
+        },
+        (value) {
+          setState(() {
+            _selectedPaymentMethod = value!;
+          });
+        },
+      ),
     ];
   }
 
@@ -248,8 +291,7 @@ class _CreateReservationState extends State<CreateReservation> {
                       '${index + 1}',
                       style: const TextStyle(
                         color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                        fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -305,7 +347,7 @@ class _CreateReservationState extends State<CreateReservation> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 96),
+                  const SizedBox(height: 10),
                   _buildStepIndicator(_currentStep),
                   const SizedBox(height: 36),
                   Container(
@@ -329,10 +371,14 @@ class _CreateReservationState extends State<CreateReservation> {
                         Row(
                           children: <Widget>[
                             Expanded(
-                              child: CustomButton(
-                                onPressed: _continue,
-                                text: _currentStep == 3 ? 'Confirmer' : 'Continuer',
+                              child:  CustomButton(
                                 backgroundColor: Colors.blue,
+                                onPressed: _continue, 
+                                text: _currentStep == 3 ? 'Confirmer' : 'Continuer',
+                                disabled: !(_selectedDate != null &&
+                                    _selectedTime != null &&
+                                    _addressController.text.isNotEmpty &&
+                                    _destinationController.text.isNotEmpty), // Désactivé si les conditions ne sont pas remplies
                               ),
                             ),
                             const SizedBox(width: 8),
