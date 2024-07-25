@@ -7,6 +7,8 @@ import 'package:trust_reservation_second/widgets/custom_button.dart';
 
 Widget buildVehicleSelectionStep(
   List<dynamic> vehicles,
+  String selectedVehicle,
+  String estimation,
   ValueChanged<String> onVehicleSelected,
 ) {
   return Column(
@@ -25,8 +27,9 @@ Widget buildVehicleSelectionStep(
           vehicle['capacite_passagers'].toString(),
           vehicle['capacite_chargement'],
           vehicle['type_carburant'],
-          vehicle['cout'].toString(),
+          estimation,
           vehicle['galerie'],
+          selectedVehicle,
           onVehicleSelected,
         );
       }).toList(),
@@ -41,6 +44,7 @@ Widget buildVehicleOption(
   String fuel,
   String price,
   String imagePath,
+  String selectedVehicle,
   ValueChanged<String> onVehicleSelected,
 ) {
   return Container(
@@ -68,13 +72,12 @@ Widget buildVehicleOption(
             onVehicleSelected(type);
           },
           text: 'Choisir',
-          backgroundColor: Colors.orange,
+          backgroundColor: type == selectedVehicle ? Colors.orange : Colors.grey,
         ),
       ],
     ),
   );
 }
-
 Widget buildDateTimeSelectionStep(
   BuildContext context,
   DateTime? selectedDate,
@@ -451,4 +454,125 @@ String _formatPaymentMethodName(String method) {
     default:
       return method;
   }
+}
+Widget buildClientSelectionStep(
+  bool isNewClient,
+  List<Map<String, dynamic>> clients,
+  String selectedClientId,
+  ValueChanged<String?> onClientSelected,
+  ValueChanged<bool> onClientTypeChanged,
+  TextEditingController nameController,
+  TextEditingController phoneController,
+  TextEditingController emailController,
+  TextEditingController addressController,
+) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        children: [
+          Expanded(
+            child: GestureDetector(
+              onTap: () => onClientTypeChanged(false),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                decoration: BoxDecoration(
+                  color: !isNewClient ? ColorsApp.primaryColor : Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey),
+                ),
+                child: Center(
+                  child: Text(
+                    'ANCIEN CLIENT',
+                    style: TextStyle(
+                      color: !isNewClient ? Colors.white : Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: GestureDetector(
+              onTap: () => onClientTypeChanged(true),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                decoration: BoxDecoration(
+                  color: isNewClient ? ColorsApp.primaryColor : Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey),
+                ),
+                child: Center(
+                  child: Text(
+                    'NOUVEAU CLIENT',
+                    style: TextStyle(
+                      color: isNewClient ? Colors.white : Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 16),
+      if (!isNewClient)
+        DropdownButtonFormField<String>(
+          decoration: const InputDecoration(
+            labelText: 'Client',
+            prefixIcon: Icon(Icons.person),
+          ),
+          value: selectedClientId,
+          items: clients.map((client) {
+            return DropdownMenuItem(
+              value: client['id'].toString(),
+              child: Text('${client['first_name']} ${client['last_name']}'),
+            );
+          }).toList(),
+          onChanged: onClientSelected,
+        ),
+      if (isNewClient) ...[
+        TextFormField(
+          controller: nameController,
+          decoration: const InputDecoration(
+            labelText: 'Nom du client',
+            hintText: 'Entrez le nom du client',
+            prefixIcon: Icon(Icons.person),
+          ),
+        ),
+        const SizedBox(height: 16),
+        TextFormField(
+          controller: phoneController,
+          decoration: const InputDecoration(
+            labelText: 'Numéro de téléphone',
+            hintText: 'Entrez le numéro de téléphone',
+            prefixIcon: Icon(Icons.phone),
+          ),
+        ),
+        const SizedBox(height: 16),
+        TextFormField(
+          controller: emailController,
+          decoration: const InputDecoration(
+            labelText: 'Adresse e-mail',
+            hintText: 'Entrez l\'adresse e-mail',
+            prefixIcon: Icon(Icons.email),
+          ),
+        ),
+        const SizedBox(height: 16),
+        TextFormField(
+          controller: addressController,
+          decoration: const InputDecoration(
+            labelText: 'Adresse du client',
+            hintText: 'Entrez l\'adresse du client',
+            prefixIcon: Icon(Icons.location_on),
+          ),
+        ),
+      ],
+    ],
+  );
 }

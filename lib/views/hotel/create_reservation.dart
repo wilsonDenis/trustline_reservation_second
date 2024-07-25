@@ -2,12 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:trust_reservation_second/constants/colors_app.dart';
 import 'package:trust_reservation_second/services/reservation_service.dart';
-import 'package:trust_reservation_second/views/hotel/contact_form.dart';
-import 'package:trust_reservation_second/views/hotel/payement_selection.dart';
-import 'package:trust_reservation_second/views/hotel/voiture_choice.dart';
 import 'package:trust_reservation_second/widgets/custom_button.dart';
-import 'package:trust_reservation_second/widgets/reservation_widgets.dart'; // Import des widgets
-
+import 'package:trust_reservation_second/widgets/reservation_widgets.dart';
 
 class CreateReservation extends StatefulWidget {
   const CreateReservation({super.key});
@@ -22,11 +18,17 @@ class _CreateReservationState extends State<CreateReservation> {
   final TextEditingController _flightTrainNumberController = TextEditingController();
   final TextEditingController _caseNumberController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _clientAddressController = TextEditingController();
 
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
   bool isDefaultAddress = true;
   int _currentStep = 0;
+  bool _isNewClient = true;
+  
 
   String _selectedVehicle = '';
   String _name = '';
@@ -39,30 +41,46 @@ class _CreateReservationState extends State<CreateReservation> {
   String _selectedPassengerCount = '';
   String _selectedBaggageCount = '';
   String? _selectedPaymentMethod;
+  String? _selectedClientId;
 
   List<dynamic> _vehicles = [];
-  List<String> _paymentMethods = []; // Définir comme List<String>
+  List<String> _paymentMethods = [];
+  List<Map<String, dynamic>> _clients = [];
 
   final ReservationService _reservationService = ReservationService();
 
   @override
   void initState() {
     super.initState();
+    _loadClients();
     _reservationService.loadAddresses(_addressController);
     _reservationService.getCurrentLocation(_addressController);
     _addressController.addListener(_calculateEstimation);
     _destinationController.addListener(_calculateEstimation);
+    _flightTrainNumberController.addListener(_calculateEstimation);
+    _caseNumberController.addListener(_calculateEstimation);
+    _notesController.addListener(_calculateEstimation);
     _loadVehicles();
     _loadPaymentMethods();
-    _selectedPaymentMethod = null; // Initialiser avec null ou une valeur existante
+    _selectedPaymentMethod = null;
   }
 
   @override
   void dispose() {
     _addressController.removeListener(_calculateEstimation);
     _destinationController.removeListener(_calculateEstimation);
+    _flightTrainNumberController.removeListener(_calculateEstimation);
+    _caseNumberController.removeListener(_calculateEstimation);
+    _notesController.removeListener(_calculateEstimation);
     _addressController.dispose();
     _destinationController.dispose();
+    _flightTrainNumberController.dispose();
+    _caseNumberController.dispose();
+    _notesController.dispose();
+    _nameController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    _clientAddressController.dispose();
     super.dispose();
   }
 
@@ -87,74 +105,13 @@ class _CreateReservationState extends State<CreateReservation> {
     }
   }
 
-  void _handleContactSubmitted(String name, String phone, String email) {
-    setState(() {
-      _name = name;
-      _phone = phone;
-      _email = email;
-    });
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PaymentSelection(
-          onPaymentCompleted: () {
-            setState(() {
-              _currentStep = 3;
-            });
-            Navigator.popUntil(context, (route) => route.isFirst);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const CreateReservation(),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
   void _continue() async {
-    if (_currentStep < 3) {
-      if (_currentStep == 2) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => VoitureChoice(
-              onCarSelected: (car) {
-                setState(() {
-                  _selectedVehicle = car;
-                });
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ContactForm(
-                      onContactSubmitted: (name, phone, email) {
-                        _handleContactSubmitted(name, phone, email);
-                      },
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        );
-      } else {
-        setState(() {
-          _currentStep += 1;
-        });
-      }
-
-      await _reservationService.saveReservationData(
-        _currentStep,
-        _addressController.text,
-        _destinationController.text,
-        _selectedDate,
-        _selectedTime,
-        context,
-      );
+    if (_currentStep == 3) {
+      // Handle form submission or final step actions
     } else {
-      // Handle form submission
+      setState(() {
+        _currentStep += 1;
+      });
     }
   }
 
@@ -179,21 +136,145 @@ class _CreateReservationState extends State<CreateReservation> {
   }
 
   void _loadPaymentMethods() async {
-  try {
-    final methods = await _reservationService.getPaymentMethods();
-    setState(() {
-      _paymentMethods = methods.map((method) => method['nom'].toString()).toList();
-      if (_paymentMethods.isNotEmpty) {
-        _selectedPaymentMethod = _paymentMethods.first;
+    try {
+      final methods = await _reservationService.getPaymentMethods();
+      setState(() {
+        _paymentMethods = methods.map((method) => method['nom'].toString()).toList();
+        if (_paymentMethods.isNotEmpty) {
+          _selectedPaymentMethod = _paymentMethods.first;
+        }
+      });
+    } catch (e) {
+      // Gérer l'erreur
+      if (kDebugMode) {
+        print('Erreur lors du chargement des méthodes de paiement : $e');
       }
+    }
+  }
+void _loadClients() async {
+  try {
+    final response = await _reservationService.getClients();
+    setState(() {
+      _clients = List<Map<String, dynamic>>.from(
+        response.map((client) {
+          return {
+            'id': client['id'] is int ? client['id'] : int.tryParse(client['id'].toString()) ?? 0,
+            'first_name': client['first_name'],
+            'last_name': client['last_name'],
+            // ajouter les autres champs nécessaires ici
+          };
+        }).toList(),
+      );
     });
   } catch (e) {
     // Gérer l'erreur
     if (kDebugMode) {
-      print('Erreur lors du chargement des méthodes de paiement : $e');
+      print('Erreur lors du chargement des clients : $e');
     }
   }
 }
+
+
+  Widget _buildClientSelection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _isNewClient = true;
+                    _selectedClientId = null;
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _isNewClient ? ColorsApp.primaryColor : Colors.grey,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  minimumSize: const Size(100, 50),
+                ),
+                child: const Text(
+                  'NOUVEAU CLIENT',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _isNewClient = false;
+                    _selectedClientId = _clients.isNotEmpty ? _clients.first['id'].toString() : null;
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: !_isNewClient ? ColorsApp.primaryColor : Colors.grey,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  minimumSize: const Size(100, 50),
+                ),
+                child: const Text(
+                  'ANCIEN CLIENT',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        if (_isNewClient) ...[
+          TextFormField(
+            controller: _nameController,
+            decoration: const InputDecoration(
+              labelText: 'Nom du client',
+              prefixIcon: Icon(Icons.person),
+            ),
+          ),
+          TextFormField(
+            controller: _phoneController,
+            decoration: const InputDecoration(
+              labelText: 'Numéro de téléphone',
+              prefixIcon: Icon(Icons.phone),
+            ),
+          ),
+          TextFormField(
+            controller: _emailController,
+            decoration: const InputDecoration(
+              labelText: 'Adresse e-mail',
+              prefixIcon: Icon(Icons.email),
+            ),
+          ),
+          TextFormField(
+            controller: _clientAddressController,
+            decoration: const InputDecoration(
+              labelText: 'Adresse du client',
+              prefixIcon: Icon(Icons.location_on),
+            ),
+          ),
+        ] else ...[
+          DropdownButtonFormField<String>(
+            decoration: const InputDecoration(
+              labelText: 'Client',
+              prefixIcon: Icon(Icons.person),
+            ),
+            value: _selectedClientId,
+            items: _clients.map((client) {
+              return DropdownMenuItem(
+                value: client['id'].toString(),
+                child: Text('${client['first_name']} ${client['last_name']}'),
+              );
+            }).toList(),
+            onChanged: (value) {
+              setState(() {
+                _selectedClientId = value;
+              });
+            },
+          ),
+        ],
+      ],
+    );
+  }
 
   List<Widget> _getStepContents(BuildContext context) {
     return [
@@ -235,6 +316,8 @@ class _CreateReservationState extends State<CreateReservation> {
       ),
       buildVehicleSelectionStep(
         _vehicles,
+        _selectedVehicle,
+        _estimation,
         (vehicleType) {
           setState(() {
             _selectedVehicle = vehicleType;
@@ -267,6 +350,7 @@ class _CreateReservationState extends State<CreateReservation> {
           });
         },
       ),
+      _buildClientSelection(),
     ];
   }
 
@@ -291,7 +375,8 @@ class _CreateReservationState extends State<CreateReservation> {
                       '${index + 1}',
                       style: const TextStyle(
                         color: Colors.white,
-                        fontWeight: FontWeight.bold),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -347,9 +432,9 @@ class _CreateReservationState extends State<CreateReservation> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
                   _buildStepIndicator(_currentStep),
-                  const SizedBox(height: 36),
+                  const SizedBox(height: 40),
                   Container(
                     padding: const EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
@@ -371,9 +456,9 @@ class _CreateReservationState extends State<CreateReservation> {
                         Row(
                           children: <Widget>[
                             Expanded(
-                              child:  CustomButton(
+                              child: CustomButton(
                                 backgroundColor: Colors.blue,
-                                onPressed: _continue, 
+                                onPressed: _continue,
                                 text: _currentStep == 3 ? 'Confirmer' : 'Continuer',
                                 disabled: !(_selectedDate != null &&
                                     _selectedTime != null &&
@@ -387,7 +472,7 @@ class _CreateReservationState extends State<CreateReservation> {
                                 onPressed: _cancel,
                                 style: OutlinedButton.styleFrom(
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(6.0),
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
                                   minimumSize: const Size(50, 50),
                                 ),

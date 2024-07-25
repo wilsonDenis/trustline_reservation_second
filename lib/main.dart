@@ -68,7 +68,7 @@ class MyApp extends StatelessWidget {
         '/createreservation': (context) => const CreateReservation(),
         '/infohotel': (context) => const InfoHotel(),
         '/chauffeurdashboard': (context) => const ChauffeurDashboard(),
-      },
+        },
     );
   }
 }

@@ -154,37 +154,53 @@ class ReservationService {
       throw Exception('Failed to load vehicles');
     }
   }
-Future<List<dynamic>> getPaymentMethods() async {
-  final response = await _apiService.getData('/setting/methodes/');
+
+  Future<List<dynamic>> getPaymentMethods() async {
+    final response = await _apiService.getData('/setting/methodes/');
   
-  if (kDebugMode) {
-    print('----------------Response status code: ${response.statusCode}');
-    print('-------------Response data: ${response.data}');
+    if (kDebugMode) {
+      print('----------------Response status code: ${response.statusCode}');
+      print('-------------Response data: ${response.data}');
+    }
+  
+    if (response.statusCode == 200) {
+      final activeMethods = response.data.where((method) => method['is_active'] == true).toList();
+    
+      if (kDebugMode) {
+        print('---------------------Active methods: $activeMethods');
+      }
+    
+      final paymentMethods = activeMethods.map((method) => {
+        'nom': method['nom'],
+        'label': method['nom'], // Plus besoin de formater ici
+        'description': method['description'],
+      }).toList();
+    
+      if (kDebugMode) {
+        print('Payment methods: $paymentMethods');
+      }
+    
+      return paymentMethods;
+    } else {
+      throw Exception('Failed to load payment methods');
+    }
   }
   
+  // Nouvelles fonctionnalités ajoutées
+   Future<List<Map<String, dynamic>>> getClients() async {
+  final response = await _apiService.getData('/auth/clients/');
+  if (kDebugMode) {
+    print('---------------------TOUS LES CLIENTS: $response');
+  }
   if (response.statusCode == 200) {
-    final activeMethods = response.data.where((method) => method['is_active'] == true).toList();
-    
-    if (kDebugMode) {
-      print('---------------------Active methods: $activeMethods');
-    }
-    
-    final paymentMethods = activeMethods.map((method) => {
-      'nom': method['nom'],
-      'label': method['nom'], // Plus besoin de formater ici
-      'description': method['description'],
-    }).toList();
-    
-    if (kDebugMode) {
-      print('Payment methods: $paymentMethods');
-    }
-    
-    return paymentMethods;
+    return List<Map<String, dynamic>>.from(response.data['clients']);
   } else {
-    throw Exception('Failed to load payment methods');
+    throw Exception('Failed to load clients');
   }
 }
-  // Nouvelles fonctionnalités ajoutées
+
+
+  
   Future<Response> createClient(Map<String, dynamic> data) async {
     return await _apiService.postData('/auth/register/', data);
   }
@@ -200,4 +216,7 @@ Future<List<dynamic>> getPaymentMethods() async {
   Future<Response> getReservation(int reservationId) async {
     return await _apiService.getData('/reservation/$reservationId/');
   }
+
+
+  
 }
