@@ -56,8 +56,9 @@ class AuthService {
       'email_or_phone': emailOrPhone,
     };
     try {
-      return await _apiService.postData('/auth/password/reset/', data, requireToken: false);
+      // return await _apiService.postData('/auth/password/reset/', data, requireToken: false);
       // return await _apiService.postData('/auth/passwordResetFlutter/reset/', data, requireToken: false);
+      return await _apiService.postData('/auth/passwordResetFlutter/reset/', data, requireToken: false);
     } catch (e) {
       if (kDebugMode) {
         print('Exception lors de la demande de réinitialisation du mot de passe : $e');
@@ -75,8 +76,8 @@ class AuthService {
       'confirm_new_password': confirmNewPassword,
     };
     try {
-      return await _apiService.postData('/auth/password/reset/', data, requireToken: false);
-      // return await _apiService.postData('/auth/passwordResetFlutter/reset/', data, requireToken: false);
+      // return await _apiService.postData('/auth/password/reset/', data, requireToken: false);
+      return await _apiService.postData('/auth/passwordResetFlutter/reset/', data, requireToken: false);
     } catch (e) {
       if (kDebugMode) {
         print('Exception lors de la réinitialisation du mot de passe : $e');

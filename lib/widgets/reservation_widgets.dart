@@ -8,8 +8,9 @@ import 'package:trust_reservation_second/widgets/custom_button.dart';
 Widget buildVehicleSelectionStep(
   List<dynamic> vehicles,
   String selectedVehicle,
+  String selectedVehicleName,
   String estimation,
-  ValueChanged<String> onVehicleSelected,
+  void Function(String, String) onVehicleSelected, // Mise à jour de la signature ici
 ) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -23,6 +24,7 @@ Widget buildVehicleSelectionStep(
       const SizedBox(height: 16),
       ...vehicles.map((vehicle) {
         return buildVehicleOption(
+          vehicle['id'], // Utilisation de l'ID du véhicule
           vehicle['typeVehicule'],
           vehicle['capacite_passagers'].toString(),
           vehicle['capacite_chargement'],
@@ -30,7 +32,7 @@ Widget buildVehicleSelectionStep(
           estimation,
           vehicle['galerie'],
           selectedVehicle,
-          onVehicleSelected,
+          onVehicleSelected, // Passer la fonction ici
         );
       }).toList(),
     ],
@@ -38,6 +40,7 @@ Widget buildVehicleSelectionStep(
 }
 
 Widget buildVehicleOption(
+  int id, // Ajout de l'ID du véhicule
   String type,
   String seats,
   String trunk,
@@ -45,7 +48,7 @@ Widget buildVehicleOption(
   String price,
   String imagePath,
   String selectedVehicle,
-  ValueChanged<String> onVehicleSelected,
+  void Function(String, String) onVehicleSelected, // Mise à jour de la signature ici
 ) {
   return Container(
     margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0),
@@ -69,15 +72,17 @@ Widget buildVehicleOption(
         const SizedBox(height: 8),
         CustomButton(
           onPressed: () {
-            onVehicleSelected(type);
+            onVehicleSelected(id.toString(), type); // Passer l'ID et le type du véhicule
           },
           text: 'Choisir',
-          backgroundColor: type == selectedVehicle ? Colors.orange : Colors.grey,
+          backgroundColor: id.toString() == selectedVehicle ? Colors.orange : Colors.grey, // Comparaison de l'ID du véhicule
         ),
       ],
     ),
   );
 }
+
+
 Widget buildDateTimeSelectionStep(
   BuildContext context,
   DateTime? selectedDate,
@@ -355,7 +360,7 @@ Widget buildStep3Content(
     children: [
       const Center(
         child: Text(
-          'Choisir un véhicule',
+          'Détails supplémentaires',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ),
@@ -455,16 +460,20 @@ String _formatPaymentMethodName(String method) {
       return method;
   }
 }
+
 Widget buildClientSelectionStep(
   bool isNewClient,
   List<Map<String, dynamic>> clients,
   String selectedClientId,
   ValueChanged<String?> onClientSelected,
   ValueChanged<bool> onClientTypeChanged,
-  TextEditingController nameController,
+  TextEditingController firstNameController,
+  TextEditingController lastNameController,
   TextEditingController phoneController,
   TextEditingController emailController,
   TextEditingController addressController,
+  String? selectedClientType,
+  ValueChanged<String?> onClientTypeSelected,
 ) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -537,8 +546,33 @@ Widget buildClientSelectionStep(
           onChanged: onClientSelected,
         ),
       if (isNewClient) ...[
+        DropdownButtonFormField<String>(
+          decoration: const InputDecoration(
+            labelText: 'Type de client',
+            prefixIcon: Icon(Icons.account_box),
+          ),
+          value: selectedClientType,
+          items: const [
+            DropdownMenuItem(value: 'client_simple', child: Text('Client Simple')),
+            DropdownMenuItem(value: 'client_liee_agence', child: Text('Client Liée à une Agence')),
+            DropdownMenuItem(value: 'client_liee_societe', child: Text('Client Liée à une Société')),
+            DropdownMenuItem(value: 'client_societe', child: Text('Client Société')),
+            DropdownMenuItem(value: 'client_agence', child: Text('Client Agence')),
+          ],
+          onChanged: onClientTypeSelected,
+        ),
+        const SizedBox(height: 16),
         TextFormField(
-          controller: nameController,
+          controller: firstNameController,
+          decoration: const InputDecoration(
+            labelText: 'Prénom du client',
+            hintText: 'Entrez le prénom du client',
+            prefixIcon: Icon(Icons.person),
+          ),
+        ),
+        const SizedBox(height: 16),
+        TextFormField(
+          controller: lastNameController,
           decoration: const InputDecoration(
             labelText: 'Nom du client',
             hintText: 'Entrez le nom du client',

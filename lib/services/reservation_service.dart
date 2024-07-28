@@ -2,9 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:trust_reservation_second/services/api_service.dart';
 import 'package:trust_reservation_second/services/local_storage.dart';
 import 'package:trust_reservation_second/services/user_service.dart';
-import 'package:trust_reservation_second/services/api_service.dart';
 
 class ReservationService {
   final UserService _userService = UserService();
@@ -55,45 +55,42 @@ class ReservationService {
     }
   }
 
-  Future<void> calculateEstimation(
-    DateTime? selectedDate,
-    TimeOfDay? selectedTime,
-    TextEditingController addressController,
-    TextEditingController destinationController,
-    Function(String, String, String) onEstimationCalculated,
+  Future<Map<String, String>?> calculateEstimation(
+    DateTime selectedDate,
+    TimeOfDay selectedTime,
+    String address,
+    String destination,
   ) async {
-    if (selectedDate != null &&
-        selectedTime != null &&
-        addressController.text.isNotEmpty &&
-        destinationController.text.isNotEmpty) {
-      String datePriseEnChargeISO = DateTime(
-        selectedDate.year,
-        selectedDate.month,
-        selectedDate.day,
-        selectedTime.hour,
-        selectedTime.minute,
-      ).toIso8601String();
+    final datePriseEnChargeISO = DateTime(
+      selectedDate.year,
+      selectedDate.month,
+      selectedDate.day,
+      selectedTime.hour,
+      selectedTime.minute,
+    ).toIso8601String();
 
-      final formData = {
-        'datePriseEnCharge': datePriseEnChargeISO,
-        'departAddress': addressController.text,
-        'destinationAddress': destinationController.text,
-      };
+    final formData = {
+      'datePriseEnCharge': datePriseEnChargeISO,
+      'departAddress': address,
+      'destinationAddress': destination,
+    };
 
-      try {
-        final response = await _userService.calculateDistance(formData);
-        if (response.statusCode == 200) {
-          onEstimationCalculated(
-            response.data['distParcourt'].toString(),
-            response.data['durParcourt'].toString(),
-            response.data['transport_estimates'][0]['cout'].toString(),
-          );
-        } else {
-          // Gérer l'erreur en conséquence
-        }
-      } catch (e) {
-        // Gérer l'exception en conséquence
+    try {
+      final response = await _userService.calculateDistance(formData);
+      if (response.statusCode == 200) {
+        return {
+          'distance': response.data['distParcourt'].toString(),
+          'duration': response.data['durParcourt'].toString(),
+          'cost': response.data['transport_estimates'][0]['cout'].toString(),
+        };
+      } else {
+        return null;
       }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error during estimation calculation: $e');
+      }
+      return null;
     }
   }
 
@@ -112,6 +109,7 @@ class ReservationService {
       await LocalStorageService.saveData('selected_date', selectedDate.toIso8601String());
     }
     if (selectedTime != null) {
+      // ignore: use_build_context_synchronously
       await LocalStorageService.saveData('selected_time', selectedTime.format(context));
     }
   }
@@ -146,6 +144,10 @@ class ReservationService {
     await LocalStorageService.removeData('image_path');
   }
 
+  Future<void> clearLocalStorage() async {
+    await removeReservationData();
+  }
+
   Future<List<dynamic>> getVehicules() async {
     final response = await _apiService.getData('/gve/vehicules/');
     if (response.statusCode == 200) {
@@ -172,7 +174,7 @@ class ReservationService {
     
       final paymentMethods = activeMethods.map((method) => {
         'nom': method['nom'],
-        'label': method['nom'], // Plus besoin de formater ici
+        'label': method['nom'],
         'description': method['description'],
       }).toList();
     
@@ -185,38 +187,90 @@ class ReservationService {
       throw Exception('Failed to load payment methods');
     }
   }
-  
-  // Nouvelles fonctionnalités ajoutées
-   Future<List<Map<String, dynamic>>> getClients() async {
-  final response = await _apiService.getData('/auth/clients/');
-  if (kDebugMode) {
-    print('---------------------TOUS LES CLIENTS: $response');
-  }
-  if (response.statusCode == 200) {
-    return List<Map<String, dynamic>>.from(response.data['clients']);
-  } else {
-    throw Exception('Failed to load clients');
-  }
-}
 
+  Future<List<Map<String, dynamic>>> getClients() async {
+    try {
+      final response = await _apiService.getData('/auth/clients/');
+      if (kDebugMode) {
+        print('---------------------TOUS LES CLIENTS: $response');
+      }
+      if (response.statusCode == 200) {
+        return List<Map<String, dynamic>>.from(response.data['clients']);
+      } else {
+        throw Exception('Failed to load clients');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Erreur lors du chargement des clients : $e');
+      }
+      throw Exception('Erreur lors du chargement des clients : $e');
+    }
+  }
 
-  
-  Future<Response> createClient(Map<String, dynamic> data) async {
-    return await _apiService.postData('/auth/register/', data);
+  Future<int> createClient(Map<String, dynamic> data) async {
+    final response = await _apiService.postData('/auth/register/', data);
+    if (response.statusCode == 201) {
+      return response.data['id'];
+    } else {
+      throw Exception('Failed to create client');
+    }
   }
 
   Future<Response> getClient(int clientId) async {
     return await _apiService.getData('/auth/clients/$clientId/');
   }
 
-  Future<Response> createReservation(Map<String, dynamic> data) async {
-    return await _apiService.postData('/reservation/create/', data);
-  }
+Future<void> createReservation(Map<String, dynamic> data) async {
+  final bool isNewClient = data['client']['id'] == 0;
 
+  final reservationData = {
+    'client': isNewClient ? {
+      'first_name': data['client']['first_name'] ?? '',
+      'last_name': data['client']['last_name'] ?? '',
+      'phone': data['client']['phone'] ?? '',
+      'email': data['client']['email'] ?? '',
+      'address': data['client']['address'] ?? ''
+    } : data['client']['id'].toString(),
+    'depart': data['depart'],
+    'destination': data['destination'],
+    'datePriseEnCharge': data['datePriseEnCharge'],
+    'heurePriseEnCharge': data['heurePriseEnCharge'],
+    'distance': data['distance'],
+    'duree': data['duree'],
+    'vehicule': int.tryParse(data['vehicule']) ?? 0,
+    'nombrePassager': data['passagers'],
+    'nombreBagage': data['bagages'],
+    'modePaiement': data['modeDePaiement'],
+    'numeroVolTrain': data['numeroVolTrain'] ?? '',
+    'numeroDossier': data['numeroDossier'] ?? '',
+    'notes': data['notes'] ?? '',
+    'coutTransport': data['coutTransport'] ?? '0',
+    'coutMajorer': data['coutMajorer'] ?? '0',
+    'lieuxPriseEnCharge': data['lieuxPriseEnCharge'] ?? 'Unknown',
+    'lieuxDestination': data['lieuxDestination'] ?? 'Unknown',
+    'typeReservation': data['typeReservation'] ?? 'Standard',
+    'coutTotalReservation': data['coutTotal'],
+    'totalAttributCost': data['totalAttributCost'] ?? '0',
+    'destinationInputs': data['destinationInputs'] ?? 'Default',
+    'attribut': 1, // Ajout de l'attribut par défaut
+    'utilisateur': data['utilisateur'],
+    'client_partiel': data['client_partiel'],
+  };
+
+  try {
+    final response = await _apiService.postData('/reservations/', reservationData);
+    if (response.statusCode != 201) {
+      throw Exception('Failed to create reservation');
+    }
+  } catch (e) {
+    if (kDebugMode) {
+      print('Error during reservation creation: $e');
+    }
+    throw Exception('Erreur lors de la création de la réservation : $e');
+  }
+}
+  
   Future<Response> getReservation(int reservationId) async {
     return await _apiService.getData('/reservation/$reservationId/');
   }
-
-
-  
 }

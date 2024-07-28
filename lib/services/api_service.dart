@@ -6,8 +6,8 @@ class ApiService {
   final Dio _dio = Dio(
     BaseOptions(
       baseUrl: 'https://laconciergerie-i-carre.com/testApi/api', // Remplacez par votre URL ngrok actuelle
-      connectTimeout: const Duration(seconds: 9), // Délai d'attente de connexion (9 secondes)
-      receiveTimeout: const Duration(seconds: 6), // Délai d'attente de réception (6 secondes)
+      connectTimeout: const Duration(seconds: 15), // Délai d'attente de connexion (9 secondes)
+      receiveTimeout: const Duration(seconds: 15), // Délai d'attente de réception (6 secondes)
     ),
   );
 
