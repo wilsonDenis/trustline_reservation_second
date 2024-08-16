@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:trust_reservation_second/constants/colors_app.dart';
 
 class ReservationDetailsScreen extends StatelessWidget {
-  final Map<String, String> reservation;
+  final Map<String, dynamic> reservation;
 
   const ReservationDetailsScreen({super.key, required this.reservation});
 
@@ -22,7 +22,7 @@ class ReservationDetailsScreen extends StatelessWidget {
         },
         heroTag: "edit",
         tooltip: 'Edit',
-        child: Icon(
+        child: const Icon(
           Icons.edit,
           color: Colors.white,
         ),
@@ -37,7 +37,7 @@ class ReservationDetailsScreen extends StatelessWidget {
         },
         heroTag: "delete",
         tooltip: 'Delete',
-        child: Icon(
+        child: const Icon(
           Icons.delete,
           color: Colors.white,
         ),
@@ -52,13 +52,13 @@ class ReservationDetailsScreen extends StatelessWidget {
         },
         heroTag: "share",
         tooltip: 'Share',
-        child: Icon(Icons.share, color: Colors.white),
+        child: const Icon(Icons.share, color: Colors.white),
         backgroundColor: ColorsApp.primaryColor,
       );
     }
 
     return Scaffold(
-      backgroundColor: Color.fromARGB(226, 255, 255, 255),
+      backgroundColor: const Color.fromARGB(226, 255, 255, 255),
       appBar: AppBar(
         backgroundColor: primaryColor,
         title: const Text('Reservation Details'),
@@ -94,14 +94,6 @@ class ReservationDetailsScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 5),
-                  // Text(
-                  //   'A4-123',
-                  //   style: TextStyle(
-                  //     color: Colors.white,
-                  //     fontSize: 20,
-                  //     fontWeight: FontWeight.w500,
-                  //   ),
-                  // ),
                 ],
               ),
             ),
@@ -253,32 +245,3 @@ class ReservationDetailsScreen extends StatelessWidget {
     );
   }
 }
-
-// class CustomIconButton extends StatelessWidget {
-//   final VoidCallback onPressed;
-//   final IconData icon;
-
-//   const CustomIconButton({
-//     Key? key,
-//     required this.onPressed,
-//     required this.icon,
-//   }) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return ElevatedButton(
-//       onPressed: onPressed,
-//       style: ElevatedButton.styleFrom(
-//         backgroundColor: ColorsApp.primaryColor,
-//         shape: RoundedRectangleBorder(
-//           borderRadius: BorderRadius.circular(10.0),
-//         ),
-//         padding: const EdgeInsets.all(16.0),
-//       ),
-//       child: Icon(
-//         icon,
-//         color: Colors.white,
-//       ),
-//     );
-//   }
-// }

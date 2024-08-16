@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:trust_reservation_second/services/user_service.dart';
 import 'package:trust_reservation_second/views/hotel/configuration_hotel.dart';
-import 'package:trust_reservation_second/views/hotel/listes_receptionnists.dart';
+import 'package:trust_reservation_second/views/hotel/listes_receptionnistes_screen.dart';
 import 'package:trust_reservation_second/widgets/rectangle_button.dart';
 import 'package:trust_reservation_second/services/local_storage.dart';
 import 'package:trust_reservation_second/constants/colors_app.dart';
@@ -175,7 +175,7 @@ class _InfoHotelState extends State<InfoHotel> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          ListesReceptionnists())),
+                                         ListReceptionnistesScreen())),
                               buttonText: '',
                               buttonColor: ColorsApp.primaryColor,
                               textColor: Colors.white,

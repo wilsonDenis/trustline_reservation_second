@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:trust_reservation_second/constants/colors_app.dart';
+import 'package:trust_reservation_second/services/reservation_service.dart';
 import 'package:trust_reservation_second/views/hotel/resevation_details_screen.dart';
+import 'package:flutter/foundation.dart';
 
 class HistoryReservations extends StatefulWidget {
   const HistoryReservations({super.key});
@@ -11,31 +13,35 @@ class HistoryReservations extends StatefulWidget {
 }
 
 class _HistoryReservationsState extends State<HistoryReservations> {
-  final List<Map<String, String>> reservations = [
-    {
-      'name': 'Reservation 1',
-      'address': '123 Main St',
-      'time': '10:00 AM',
-      'reservedBy': 'Will Smith',
-    },
-    {
-      'name': 'Reservation 2',
-      'address': '456 Elm St',
-      'time': '12:00 PM',
-      'reservedBy': 'Will Smith',
-    },
-    {
-      'name': 'Reservation 3',
-      'address': '789 Maple St',
-      'time': '2:00 PM',
-      'reservedBy': 'Will Smith',
-    },
-  ];
-
+  final ReservationService _reservationService = ReservationService();
+  List<Map<String, dynamic>> reservations = [];
   final Set<int> _selectedReservations = {};
+  bool _isLoading = true;
 
-  void _showInvoiceOptions(
-      BuildContext context, Map<String, String> reservation) {
+  @override
+  void initState() {
+    super.initState();
+    _loadReservations();
+  }
+
+  Future<void> _loadReservations() async {
+    try {
+      final response = await _reservationService.getReservations();
+      setState(() {
+        reservations = List<Map<String, dynamic>>.from(response);
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to load reservations: $e');
+      }
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _showInvoiceOptions(BuildContext context, Map<String, dynamic> reservation) {
     if (_selectedReservations.isEmpty) {
       showCupertinoModalPopup(
         context: context,
@@ -49,8 +55,7 @@ class _HistoryReservationsState extends State<HistoryReservations> {
                   Navigator.push(
                     context,
                     CupertinoPageRoute(
-                      builder: (context) =>
-                          ReservationDetailsScreen(reservation: reservation),
+                      builder: (context) => ReservationDetailsScreen(reservation: reservation),
                     ),
                   );
                 },
@@ -63,14 +68,6 @@ class _HistoryReservationsState extends State<HistoryReservations> {
                 },
                 child: const Text('Demander Facture'),
               ),
-
-              // CupertinoActionSheetAction(
-              //   onPressed: () {
-              //     Navigator.of(context).pop();
-              //     // Handle cancellation
-              //   },
-              //   child: const Text('Cancel Reservation'),
-              // ),
             ],
             cancelButton: CupertinoActionSheetAction(
               onPressed: () {
@@ -90,8 +87,7 @@ class _HistoryReservationsState extends State<HistoryReservations> {
       builder: (context) {
         return CupertinoAlertDialog(
           title: const Text('Demande de Facture'),
-          content: const Text(
-              'Voulez-vous demander une facture pour les réservations sélectionnées ?'),
+          content: const Text('Voulez-vous demander une facture pour les réservations sélectionnées ?'),
           actions: [
             CupertinoDialogAction(
               onPressed: () {
@@ -106,8 +102,7 @@ class _HistoryReservationsState extends State<HistoryReservations> {
                   Navigator.push(
                     context,
                     CupertinoPageRoute(
-                      builder: (context) => ReservationDetailsScreen(
-                          reservation: reservations[index]),
+                      builder: (context) => ReservationDetailsScreen(reservation: reservations[index]),
                     ),
                   );
                 }
@@ -156,53 +151,53 @@ class _HistoryReservationsState extends State<HistoryReservations> {
             : null,
       ),
       child: SafeArea(
-        child: ListView.builder(
-          padding: const EdgeInsets.all(8.0),
-          itemCount: reservations.length,
-          itemBuilder: (context, index) {
-            final reservation = reservations[index];
-            final isSelected = _selectedReservations.contains(index);
-            return Card(
-              color: Color.fromARGB(213, 255, 255, 255),
-              // color: Color.fromARGB(255, 255, 255, 255),
-              elevation: 5.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              margin: const EdgeInsets.symmetric(vertical: 8.0),
-              child: CupertinoListTile(
-                leading: const Icon(CupertinoIcons.calendar,
-                    color: ColorsApp.primaryColor),
-                title: Text(
-                  reservation['name']!,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Address: ${reservation['address']}'),
-                    Text('Time: ${reservation['time']}'),
-                    Text('Reserved by: ${reservation['reservedBy']}'),
-                  ],
-                ),
-                trailing: isSelected
-                    ? const Icon(CupertinoIcons.check_mark_circled_solid,
-                        color: Colors.green)
-                    : const Icon(CupertinoIcons.circle),
-                onTap: () {
-                  if (_selectedReservations.isEmpty) {
-                    _showInvoiceOptions(context, reservation);
-                  } else {
-                    _toggleSelection(index);
-                  }
+        child: _isLoading
+            ? const Center(child: CupertinoActivityIndicator())
+            : ListView.builder(
+                padding: const EdgeInsets.all(8.0),
+                itemCount: reservations.length,
+                itemBuilder: (context, index) {
+                  final reservation = reservations[index];
+                  final isSelected = _selectedReservations.contains(index);
+                  return Card(
+                    color: const Color.fromARGB(213, 255, 255, 255),
+                    elevation: 5.0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: CupertinoListTile(
+                      leading: const Icon(CupertinoIcons.calendar, color: ColorsApp.primaryColor),
+                      title: Text(
+                        reservation['numero_reservation']?.toString() ?? 'Inconnu',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Adresse: ${reservation['lieuxPriseEnCharge']?.toString() ?? 'Inconnu'}', style: TextStyle(color: Colors.blue)),
+                          Text('Heure: ${reservation['datePriseEnCharge']?.toString() ?? 'Inconnu'}', style: TextStyle(color: Colors.red)),
+                          Text('Destination: ${reservation['lieuxDestination']?.toString() ?? 'Inconnu'}', style: TextStyle(color: Colors.green)),
+                          Text('Coût: ${reservation['coutTransport']?.toString() ?? 'Inconnu'} €', style: TextStyle(color: Colors.orange)),
+                        ],
+                      ),
+                      trailing: isSelected
+                          ? const Icon(CupertinoIcons.check_mark_circled_solid, color: Colors.green)
+                          : const Icon(CupertinoIcons.circle),
+                      onTap: () {
+                        if (_selectedReservations.isEmpty) {
+                          _showInvoiceOptions(context, reservation);
+                        } else {
+                          _toggleSelection(index);
+                        }
+                      },
+                      onLongPress: () {
+                        _handleLongPress(index);
+                      },
+                    ),
+                  );
                 },
-                onLongPress: () {
-                  _handleLongPress(index);
-                },
               ),
-            );
-          },
-        ),
       ),
     );
   }

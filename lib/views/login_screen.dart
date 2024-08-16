@@ -6,12 +6,12 @@ import 'package:trust_reservation_second/views/admin/admin_dasboard.dart';
 import 'package:trust_reservation_second/views/chauffeur/chauffeur_dashboard.dart';
 import 'package:trust_reservation_second/views/hotel/hotel_dashboard.dart';
 import 'package:trust_reservation_second/widgets/custom_text_form_field.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _LoginScreenState createState() => _LoginScreenState();
 }
 
@@ -46,30 +46,27 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   @override
   void dispose() {
     _animationController.dispose();
+    txtEmail.dispose();
+    txtPassword.dispose();
     super.dispose();
   }
-  // Méthode pour gérer la connexion
+
   Future<void> _login() async {
     if (formKey.currentState!.validate()) {
       final email = txtEmail.text;
       final password = txtPassword.text;
-      final response = await AuthService()
-          .login({'email_ou_telephone': email, 'passCode': password});
+      final response = await AuthService().login({'email_ou_telephone': email, 'passCode': password});
 
-      // ignore: unnecessary_null_comparison
-      if (response != null && response.statusCode == 200) {
-        // Si la connexion a réussi
+      if (response.statusCode == 200) {
         final data = response.data;
         final userType = data['user_type'] ?? '';
 
-        // Enregistrer les informations utilisateur dans le stockage local
         await LocalStorageService.saveData('user_id', data['user_id'] ?? -1);
         await LocalStorageService.saveData('user_type', data['user_type'] ?? '');
         await LocalStorageService.saveData('specific_id', data['specific_id'] ?? -1);
         await LocalStorageService.saveData('token', data['jwt'] ?? '');
         await LocalStorageService.saveData('refresh', data['refresh'] ?? '');
 
-        // Naviguer vers le dashboard en fonction du type d'utilisateur
         switch (userType) {
           case 'administrateur':
             _navigateToDashboard(const AdminDashboard());
@@ -90,11 +87,12 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     }
   }
 
-
-
   void _navigateToDashboard(Widget dashboard) {
     if (mounted) {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => dashboard));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => dashboard),
+      );
     }
   }
 
@@ -108,12 +106,22 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
+    double containerWidth = width * 0.9;
+    if (ResponsiveBreakpoints.of(context).largerThan(TABLET)) {
+      containerWidth = width * 0.6;
+    }
+    if (ResponsiveBreakpoints.of(context).largerThan(DESKTOP)) {
+      containerWidth = width * 0.4;
+    }
+
     return Scaffold(
       backgroundColor: ColorsApp.beigeLightColor,
       body: Stack(
         children: <Widget>[
           Container(
-            height: MediaQuery.of(context).size.height * 0.67,
+            height: height * 0.59,
             width: double.infinity,
             decoration: const BoxDecoration(
               color: Color.fromARGB(255, 0, 26, 51),
@@ -149,85 +157,95 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
               child: ScaleTransition(
                 scale: _scaleAnimation,
                 child: SingleChildScrollView(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
-                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 10,
-                          offset: Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: Form(
-                      key: formKey,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Center(
-                              child: Text(
-                                'Connexion',
-                                style: TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold,
+                  child: Center(
+                    child: Container(
+                      width: containerWidth,
+                      padding: EdgeInsets.symmetric(
+                          horizontal: width * 0.08, vertical: height * 0.04),
+                      margin: EdgeInsets.symmetric(
+                          horizontal: width * 0.05, vertical: height * 0.04),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 10,
+                            offset: Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: Form(
+                        key: formKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Center(
+                                child: Text(
+                                  'Connexion',
+                                  style: TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 20),
-                          CustomTextFormField(
-                            controller: txtEmail,
-                            labelText: 'Email',
-                            hintText: 'Entrez votre email',
-                            keyboardType: TextInputType.emailAddress,
-                            borderColor: Colors.grey,
-                            borderWidth: 1.0,
-                            validator: (value) => value!.isEmpty ? 'Email requis' : null,
-                            prefixIcon: Icons.mail,
-                            obscureText: false,
-                          ),
-                          const SizedBox(height: 15),
-                          CustomTextFormField(
-                            controller: txtPassword,
-                            labelText: 'Mot de passe',
-                            hintText: 'Entrez votre mot de passe',
-                            keyboardType: TextInputType.visiblePassword,
-                            borderColor: Colors.grey,
-                            borderWidth: 1.0,
-                            validator: (value) => value!.isEmpty ? 'Mot de passe requis' : null,
-                            prefixIcon: Icons.lock,
-                            obscureText: true,
-                          ),
-                          const SizedBox(height: 15),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: () {
-                                Navigator.pushNamed(context, '/resetpasswordscreen');
-                              },
-                              child: const Text('Mot de passe oublié ?', style: TextStyle(color: Colors.grey)),
+                            SizedBox(height: height * 0.03),
+                            CustomTextFormField(
+                              controller: txtEmail,
+                              labelText: 'Email',
+                              hintText: 'Entrez votre email',
+                              keyboardType: TextInputType.emailAddress,
+                              borderColor: Colors.grey,
+                              borderWidth: 1.0,
+                              validator: (value) =>
+                                  value!.isEmpty ? 'Email requis' : null,
+                              prefixIcon: Icons.mail,
+                              obscureText: false,
                             ),
-                          ),
-                          const SizedBox(height: 15),
-                          ElevatedButton(
-                            onPressed: _login,
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              backgroundColor: const Color.fromARGB(255, 0, 26, 51),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5.0),
+                            SizedBox(height: height * 0.02),
+                            CustomTextFormField(
+                              controller: txtPassword,
+                              labelText: 'Mot de passe',
+                              hintText: 'Entrez votre mot de passe',
+                              keyboardType: TextInputType.visiblePassword,
+                              borderColor: Colors.grey,
+                              borderWidth: 1.0,
+                              validator: (value) =>
+                                  value!.isEmpty ? 'Mot de passe requis' : null,
+                              prefixIcon: Icons.lock,
+                              obscureText: true,
+                            ),
+                            SizedBox(height: height * 0.02),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: TextButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                      context, '/resetpasswordscreen');
+                                },
+                                child: const Text('Mot de passe oublié ?',
+                                    style: TextStyle(color: Colors.grey)),
                               ),
-                              minimumSize: const Size(double.infinity, 50),
                             ),
-                            child: const Text('Se connecter'),
-                          ),
-                        ],
+                            SizedBox(height: height * 0.02),
+                            ElevatedButton(
+                              onPressed: _login,
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor:
+                                    const Color.fromARGB(255, 0, 26, 51),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5.0),
+                                ),
+                                minimumSize: Size(double.infinity, height * 0.07),
+                              ),
+                              child: const Text('Se connecter'),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

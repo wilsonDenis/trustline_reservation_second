@@ -5,7 +5,8 @@ import 'package:trust_reservation_second/services/local_storage.dart';
 class ApiService {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: 'https://laconciergerie-i-carre.com/testApi/api', // Remplacez par votre URL ngrok actuelle
+      // baseUrl: 'https://laconciergerie-i-carre.com/testApi/api', // Remplacez par votre URL ngrok actuelle
+      baseUrl: 'https://1b35-2c0f-f0f8-818-4705-c135-11b0-1a47-dad1.ngrok-free.app/api', // Remplacez par votre URL ngrok actuelle
       connectTimeout: const Duration(seconds: 15), // Délai d'attente de connexion (9 secondes)
       receiveTimeout: const Duration(seconds: 15), // Délai d'attente de réception (6 secondes)
     ),
@@ -187,111 +188,3 @@ class ApiService {
     }
   }
 }
-
-// import 'package:dio/dio.dart';
-// import 'package:flutter/foundation.dart';
-// import 'package:trust_reservation_second/services/local_storage.dart';
-// import 'dio_client.dart';
-
-// class ApiService {
-//   final DioClient _dioClient = DioClient();
-  
-//   Future<String?> getAuthToken() async {
-//     return await LocalStorageService.getData('token');
-//   }
-  
-//   Future<Response> postData(String endpoint, Map<String, dynamic> data, {bool requireToken = true}) async {
-//     if (requireToken) {
-//       final token = await getAuthToken();
-//       if (token != null) {
-//         _dioClient.dio.options.headers["Authorization"] = "Bearer $token";
-//       }
-//     }
-
-//     if (kDebugMode) {
-//       print('POST request to: ${_dioClient.dio.options.baseUrl}$endpoint');
-//       print('Headers: ${_dioClient.dio.options.headers}');
-//       print('Body: $data');
-//     }
-
-//     try {
-//       final response = await _dioClient.dio.post(endpoint, data: data);
-
-//       if (kDebugMode) {
-//         print('Response status: ${response.statusCode}');
-//         print('Response body: ${response.data}');
-//       }
-
-//       return response;
-//     } on DioException catch (e) {
-//       if (kDebugMode) {
-//         print('Request error: ${e.response?.statusCode} ${e.response?.data}');
-//       }
-//       rethrow;
-//     }
-//   }
-
-//   Future<Response> getData(String endpoint) async {
-//     final token = await getAuthToken();
-//     if (token != null) {
-//       _dioClient.dio.options.headers["Authorization"] = "Bearer $token";
-//     }
-
-//     if (kDebugMode) {
-//       print('GET request to: ${_dioClient.dio.options.baseUrl}$endpoint');
-//       print('Headers: ${_dioClient.dio.options.headers}');
-//     }
-
-//     final response = await _dioClient.dio.get(endpoint);
-
-//     if (kDebugMode) {
-//       print('Response status: ${response.statusCode}');
-//       print('Response body: ${response.data}');
-//     }
-
-//     return response;
-//   }
-
-//   Future<Response> putData(String endpoint, Map<String, dynamic> data) async {
-//     final token = await getAuthToken();
-//     if (token != null) {
-//       _dioClient.dio.options.headers["Authorization"] = "Bearer $token";
-//     }
-
-//     if (kDebugMode) {
-//       print('PUT request to: ${_dioClient.dio.options.baseUrl}$endpoint');
-//       print('Headers: ${_dioClient.dio.options.headers}');
-//       print('Body: $data');
-//     }
-
-//     final response = await _dioClient.dio.put(endpoint, data: data);
-
-//     if (kDebugMode) {
-//       print('Response status: ${response.statusCode}');
-//       print('Response body: ${response.data}');
-//     }
-
-//     return response;
-//   }
-
-//   Future<Response> deleteData(String endpoint) async {
-//     final token = await getAuthToken();
-//     if (token != null) {
-//       _dioClient.dio.options.headers["Authorization"] = "Bearer $token";
-//     }
-
-//     if (kDebugMode) {
-//       print('DELETE request to: ${_dioClient.dio.options.baseUrl}$endpoint');
-//       print('Headers: ${_dioClient.dio.options.headers}');
-//     }
-
-//     final response = await _dioClient.dio.delete(endpoint);
-
-//     if (kDebugMode) {
-//       print('Response status: ${response.statusCode}');
-//       print('Response body: ${response.data}');
-//     }
-
-//     return response;
-//   }
-// }

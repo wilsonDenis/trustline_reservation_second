@@ -273,4 +273,23 @@ Future<void> createReservation(Map<String, dynamic> data) async {
   Future<Response> getReservation(int reservationId) async {
     return await _apiService.getData('/reservation/$reservationId/');
   }
+
+
+  // Future<List<dynamic>> getReservations() async {
+  //   final response = await _apiService.getData('/reservations/');
+  //   if (response.statusCode == 200) {
+  //     return response.data; // Assurez-vous que le format des données correspond à ce que vous attendez
+  //   } else {
+  //     throw Exception('Failed to load reservations');
+  //   }
+  // }
+  Future<List<Map<String, dynamic>>> getReservations() async {
+  final response = await _apiService.getData('/reservations/');
+  if (response.statusCode == 200) {
+    return List<Map<String, dynamic>>.from(response.data);
+  } else {
+    throw Exception('Failed to load reservations');
+  }
+}
+
 }

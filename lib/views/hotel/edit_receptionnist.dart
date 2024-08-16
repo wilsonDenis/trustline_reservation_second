@@ -1,52 +1,53 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:responsive_framework/responsive_framework.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trust_reservation_second/services/local_storage.dart';
 import 'package:trust_reservation_second/services/user_service.dart';
 import 'package:trust_reservation_second/widgets/custom_button.dart';
 import 'package:trust_reservation_second/widgets/custom_text_form_field.dart';
 
-class AddReceptionistScreen extends StatefulWidget {
-  const AddReceptionistScreen({super.key});
+class EditReceptionistScreen extends StatefulWidget {
+  final Map<String, dynamic> receptionist;
+
+  const EditReceptionistScreen({required this.receptionist, super.key});
 
   @override
-  State<AddReceptionistScreen> createState() => _AddReceptionistScreenState();
+  State<EditReceptionistScreen> createState() => _EditReceptionistScreenState();
 }
 
-class _AddReceptionistScreenState extends State<AddReceptionistScreen> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+class _EditReceptionistScreenState extends State<EditReceptionistScreen> {
+  late TextEditingController _nameController;
+  late TextEditingController _emailController;
 
-  Future<void> _saveReceptionistDetails() async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString('receptionist_name', _nameController.text);
-    prefs.setString('receptionist_email', _emailController.text);
-    prefs.setString('receptionist_password', _passwordController.text);
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: "${widget.receptionist['prenom']} ${widget.receptionist['nom']}");
+    _emailController = TextEditingController(text: widget.receptionist['email']);
   }
 
-  Future<void> _sendDetailsToAPI() async {
+  Future<void> _updateReceptionistDetails() async {
     final name = _nameController.text;
     final email = _emailController.text;
+
+    // Obtenez l'ID de l'hôtel (vous devrez peut-être l'ajouter à votre interface ou le récupérer d'une autre manière)
     final hotelId = await LocalStorageService.getData('specific_id');
 
     try {
       final UserService userService = UserService();
-      final response = await userService.createReceptionniste({
-        'nom': name.split(' ').last,
-        'prenom': name.split(' ').first,
+      final response = await userService.updateReceptionniste(widget.receptionist['id'], {
+        'nom': name.split(' ').last, // Supposant que le nom est le dernier mot
+        'prenom': name.split(' ').first, // Supposant que le prénom est le premier mot
         'email': email,
         'hotel_id': hotelId,
       });
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response.statusCode == 200 || response.statusCode == 204) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Receptionist added successfully')),
+          const SnackBar(content: Text('Receptionist updated successfully')),
         );
         Navigator.of(context).pop();
       } else {
-        throw Exception('Failed to add receptionist');
+        throw Exception('Failed to update receptionist');
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -76,11 +77,6 @@ class _AddReceptionistScreenState extends State<AddReceptionistScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Container(
-                  constraints: BoxConstraints(
-                    maxWidth: 600,
-                    minHeight: 300,
-                    maxHeight: ResponsiveBreakpoints.of(context).largerThan(TABLET) ? 400 : double.infinity,
-                  ),
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.8),
@@ -99,7 +95,7 @@ class _AddReceptionistScreenState extends State<AddReceptionistScreen> {
                     children: [
                       const Center(
                         child: Text(
-                          "Add Receptionist",
+                          "Edit Receptionist",
                           style: TextStyle(
                               fontSize: 24, fontWeight: FontWeight.bold),
                         ),
@@ -137,20 +133,19 @@ class _AddReceptionistScreenState extends State<AddReceptionistScreen> {
                         obscureText: false,
                       ),
                       const SizedBox(height: 24),
-                      // const SizedBox(height: 24),
                       Center(
                         child: CustomButton(
                           onPressed: () async {
                             if (_nameController.text.isNotEmpty &&
                                 _emailController.text.isNotEmpty) {
-                              await _sendDetailsToAPI();
+                              await _updateReceptionistDetails();
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text('Please fill all fields')),
                               );
                             }
                           },
-                          text: 'ajouter',
+                          text: 'Update Receptionist',
                           backgroundColor: Colors.blue,
                         ),
                       ),

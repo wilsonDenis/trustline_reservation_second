@@ -11,8 +11,8 @@ class HomeDriver extends StatefulWidget {
 class _HomeDriverState extends State<HomeDriver> {
   int _selectedIndex = 0;
 
-  static List<Widget> _widgetOptions = <Widget>[
-    HomePage(),
+  static final List<Widget> _widgetOptions = <Widget>[
+    const HomePage(),
     OffersPage(),
     PlannedPage(),
     FinishedPage(),
@@ -29,11 +29,11 @@ class _HomeDriverState extends State<HomeDriver> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Text('BLACKLANE', style: TextStyle(color: Colors.black)),
+        title: const Text('BLACKLANE', style: TextStyle(color: Colors.black)),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(Icons.account_circle, color: Colors.black),
+            icon: const Icon(Icons.account_circle, color: Colors.black),
             onPressed: () {
               // Action pour le bouton de profil
             },
@@ -70,11 +70,13 @@ class _HomeDriverState extends State<HomeDriver> {
 }
 
 class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
+    return const Padding(
+      padding: EdgeInsets.all(16.0),
+      child:  Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Hello, Kodjo Homawoo', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
@@ -122,7 +124,7 @@ class HomePage extends StatelessWidget {
 class OffersPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Text('Offers Page'),
     );
   }
@@ -131,16 +133,18 @@ class OffersPage extends StatelessWidget {
 class PlannedPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Text('Planned Page'),
     );
   }
 }
 
 class FinishedPage extends StatelessWidget {
+  const FinishedPage({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Text('Finished Page'),
     );
   }

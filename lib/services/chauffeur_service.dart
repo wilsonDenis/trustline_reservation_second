@@ -10,9 +10,6 @@ class ChauffeurService {
     return await _apiService.postData('/auth/chauffeurFlutter/', data);
   }
 
-  // Future<Response> getChauffeurInfo(int chauffeurId) async {
-  //   return await _apiService.getData('/auth/chauffeur/$chauffeurId/');
-  // }
 
    Future<Response> getChauffeurInfo() async {
     final int chauffeurId = await LocalStorageService.getData('userId');

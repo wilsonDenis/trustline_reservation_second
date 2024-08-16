@@ -53,6 +53,7 @@ class _GerantReceptAuthState extends State<GerantReceptAuth> {
             RectangleButton(
               onPressed: () =>
                   Navigator.pushNamed(context, '/addreceptionistscreen'),
+            
               buttonText: "Done",
               buttonColor: ColorsApp.primaryColor,
               textColor: Colors.white,

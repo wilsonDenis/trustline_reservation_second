@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1032938815342",
+    "project_id": "trust-reservation-second",
+    "storage_bucket": "trust-reservation-second.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1032938815342:android:6f1e30b93642c6817a8b7f",
+        "android_client_info": {
+          "package_name": "com.example.trust_reservation_second"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0r_D9gTjzKQ33d4qIQZvNdfSKD_OysiY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

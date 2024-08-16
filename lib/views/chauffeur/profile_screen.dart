@@ -1,11 +1,12 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:trust_reservation_second/constants/colors_app.dart';
 import 'package:trust_reservation_second/services/auth_service.dart';
 import 'package:trust_reservation_second/services/chauffeur_service.dart';
-import 'package:dio/dio.dart';
-import 'dart:io';
-
 import 'package:trust_reservation_second/views/login_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -58,7 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _showPhotoOptions(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
@@ -72,14 +73,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 radius: 50,
                 backgroundImage: _image != null
                     ? FileImage(_image!)
-                    : AssetImage('assets/icon_profile.png') as ImageProvider,
+                    : const AssetImage('assets/icon_profile.png') as ImageProvider,
               ),
-              SizedBox(height: 8),
-              Text(
+              const SizedBox(height: 8),
+              const Text(
                 'Changer photo',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -87,7 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Navigator.pop(context);
                     _pickImage(ImageSource.camera);
                   },
-                  child: Text('Prendre une photo'),
+                  child: const Text('Prendre une photo'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ColorsApp.primaryColor,
                     shape: RoundedRectangleBorder(
@@ -97,7 +98,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               SizedBox(
                 width: double.infinity,
                 child: TextButton(
@@ -105,7 +106,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Navigator.pop(context);
                     _pickImage(ImageSource.gallery);
                   },
-                  child: Text('Choisir de la galerie'),
+                  child: const Text('Choisir de la galerie'),
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                   ),
@@ -127,16 +128,64 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Future<void> _updateChauffeurInfo() async {
+    final data = {
+      'first_name': _firstNameController.text,
+      'last_name': _lastNameController.text,
+      'telephone': _telephoneController.text,
+      'email': _emailController.text,
+      'adresse': _adresseController.text,
+    };
+
+    final response = await _chauffeurService.updateChauffeur(data);
+
+    if (response.statusCode == 200) {
+      setState(() {
+        _chauffeurData = _chauffeurService.getChauffeurInfo();
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Informations mises à jour avec succès')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erreur: ${response.statusMessage}')),
+      );
+    }
+  }
+
+  void _showEditDialog(BuildContext context, String title, TextEditingController controller) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Modifier $title'),
+          content: TextFormField(
+            controller: controller,
+            decoration: InputDecoration(hintText: 'Entrez $title'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _updateChauffeurInfo();
+              },
+              child: const Text('Enregistrer'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Configuration de l'Hôtel"),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_sharp,
-              color: Colors.black), // Icune de retour personnalisée
+          icon: const Icon(Icons.arrow_back_ios_sharp, color: Colors.black),
           onPressed: () {
-            Navigator.pop(context); // Retourne à la page précédente
+            Navigator.pop(context);
           },
         ),
         centerTitle: true,
@@ -145,7 +194,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         future: _chauffeurData,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Erreur: ${snapshot.error}'));
           } else if (snapshot.hasData && snapshot.data!.data != null) {
@@ -162,37 +211,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: 40),
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundImage: _photoUrl != null
-                        ? NetworkImage('https://laconciergerie-i-carre.com/testApi$_photoUrl')
-                        : AssetImage('assets/icon_profile.png') as ImageProvider,
-                  ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 40),
+                 CircleAvatar(
+  radius: 50,
+  backgroundImage: (_photoUrl != null && _photoUrl!.isNotEmpty)
+      ? NetworkImage('$_photoUrl?${DateTime.now().millisecondsSinceEpoch}')
+      : const AssetImage('assets/icon_profile.png') as ImageProvider,
+  onBackgroundImageError: (exception, stackTrace) {
+    if (kDebugMode) {
+      print('Erreur de chargement de l\'image: $exception');
+    }
+  },
+),
+                  const SizedBox(height: 8),
                   Text(
                     '${_firstNameController.text} ${_lastNameController.text}',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   TextButton(
                     onPressed: () {
                       _showPhotoOptions(context);
                     },
-                    child: Text(
+                    child: const Text(
                       'Changer photo',
                       style: TextStyle(color: Colors.blue),
                     ),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   _buildOption(context, 'Nom', Icons.person, _firstNameController),
                   _buildOption(context, 'Prénom', Icons.person_outline, _lastNameController),
                   _buildOption(context, 'Numéro de téléphone', Icons.phone, _telephoneController),
                   _buildOption(context, 'Email', Icons.email, _emailController),
                   _buildOption(context, 'Adresse', Icons.home, _adresseController),
-                  Spacer(),
+                  const Spacer(),
+                  TextButton(
+                    onPressed: _updateChauffeurInfo,
+                    child: const Text(
+                      'Modifier les informations',
+                      style: TextStyle(color: Colors.blue),
+                    ),
+                  ),
                   TextButton(
                     onPressed: _logout,
-                    child: Text(
+                    child: const Text(
                       'Fermer session',
                       style: TextStyle(color: Colors.red),
                     ),
@@ -211,8 +272,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildOption(BuildContext context, String title, IconData icon, TextEditingController controller) {
     return GestureDetector(
       onTap: () {
-        // Logique de navigation ou modification
-        // Par exemple, afficher une boîte de dialogue pour modifier les informations
+        _showEditDialog(context, title, controller);
       },
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -224,13 +284,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Row(
           children: [
             Icon(icon, color: ColorsApp.primaryColor),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             Expanded(
               child: TextFormField(
                 controller: controller,
                 decoration: InputDecoration.collapsed(hintText: title),
-                style: TextStyle(fontSize: 16),
-                readOnly: true, // Rendre les champs en lecture seule
+                style: const TextStyle(fontSize: 16),
+                readOnly: true,
               ),
             ),
           ],
