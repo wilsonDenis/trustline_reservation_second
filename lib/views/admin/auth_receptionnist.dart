@@ -4,7 +4,7 @@ import 'package:trust_reservation_second/widgets/rectangle_button.dart';
 import '../../widgets/code_input_field.dart';
 
 class AuthReceptionnist extends StatefulWidget {
-  const AuthReceptionnist({Key? key}) : super(key: key);
+  const AuthReceptionnist({super.key});
 
   @override
   _AuthReceptionnistState createState() => _AuthReceptionnistState();

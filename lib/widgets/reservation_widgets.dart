@@ -34,7 +34,9 @@ Widget buildVehicleSelectionStep(
           selectedVehicle,
           onVehicleSelected, // Passer la fonction ici
         );
-      }).toList(),
+      })
+      // .toList()
+      ,
     ],
   );
 }
@@ -304,7 +306,7 @@ Widget buildDateTimeSelectionStep(
                 children: [
                   Expanded(
                     child: Text(
-                      '\$$estimation',
+                      '€$estimation',
                       style: const TextStyle(
                         color: Colors.orange,
                         fontWeight: FontWeight.bold,
@@ -324,7 +326,7 @@ Widget buildDateTimeSelectionStep(
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      '$durParcourt',
+                      durParcourt,
                       style: const TextStyle(
                         color: Colors.green,
                         fontWeight: FontWeight.bold,

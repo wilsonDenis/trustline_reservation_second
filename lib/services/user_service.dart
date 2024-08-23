@@ -98,7 +98,7 @@ class UserService {
       print('Récupération de tous les hôtels...');
     }
     
-    final response = await _apiService.getData('/auth/hotels/');
+    final response = await _apiService.getData('/auth/hotelsAll/');
     
     if (kDebugMode) {
       print('Status code de la réponse pour hôtels: ${response.statusCode}');

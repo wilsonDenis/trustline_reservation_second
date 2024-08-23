@@ -86,10 +86,12 @@ class _ConfigurationHotelState extends State<ConfigurationHotel> {
     );
 
     if (response.statusCode == 200) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Image uploadée avec succès')),
       );
     } else {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Échec du téléchargement de l\'image')),
       );

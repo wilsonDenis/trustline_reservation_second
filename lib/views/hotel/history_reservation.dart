@@ -175,10 +175,10 @@ class _HistoryReservationsState extends State<HistoryReservations> {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Adresse: ${reservation['lieuxPriseEnCharge']?.toString() ?? 'Inconnu'}', style: TextStyle(color: Colors.blue)),
-                          Text('Heure: ${reservation['datePriseEnCharge']?.toString() ?? 'Inconnu'}', style: TextStyle(color: Colors.red)),
-                          Text('Destination: ${reservation['lieuxDestination']?.toString() ?? 'Inconnu'}', style: TextStyle(color: Colors.green)),
-                          Text('Coût: ${reservation['coutTransport']?.toString() ?? 'Inconnu'} €', style: TextStyle(color: Colors.orange)),
+                          Text('Adresse: ${reservation['lieuxPriseEnCharge']?.toString() ?? 'Inconnu'}', style: const TextStyle(color: Colors.blue)),
+                          Text('Heure: ${reservation['datePriseEnCharge']?.toString() ?? 'Inconnu'}', style: const TextStyle(color: Colors.red)),
+                          Text('Destination: ${reservation['lieuxDestination']?.toString() ?? 'Inconnu'}', style: const TextStyle(color: Colors.green)),
+                          Text('Coût: ${reservation['coutTransport']?.toString() ?? 'Inconnu'} €', style: const TextStyle(color: Colors.orange)),
                         ],
                       ),
                       trailing: isSelected

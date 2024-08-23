@@ -42,6 +42,7 @@ class _EditReceptionistScreenState extends State<EditReceptionistScreen> {
       });
 
       if (response.statusCode == 200 || response.statusCode == 204) {
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Receptionist updated successfully')),
         );
@@ -50,6 +51,7 @@ class _EditReceptionistScreenState extends State<EditReceptionistScreen> {
         throw Exception('Failed to update receptionist');
       }
     } catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Email invalide ou déjà existant')),
       );

@@ -23,7 +23,7 @@ class LocationService {
 
   static Future<String> getCurrentLocationAddress() async {
     // Remplacez par votre logique pour obtenir l'adresse actuelle
-    final String currentLocationAddress = 'Adresse actuelle de l\'hôtel'; // Remplacez par l'appel à votre service de localisation réel
+    const String currentLocationAddress = 'Adresse actuelle de l\'hôtel'; // Remplacez par l'appel à votre service de localisation réel
     return currentLocationAddress;
   }
 }

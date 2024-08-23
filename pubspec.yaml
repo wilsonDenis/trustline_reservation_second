@@ -65,6 +65,7 @@ dependencies:
   responsive_framework: ^1.4.0
   firebase_core: ^3.3.0
   cloud_firestore: ^5.2.1
+  gif: ^2.3.0
 
 
 

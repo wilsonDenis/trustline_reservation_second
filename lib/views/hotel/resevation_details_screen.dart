@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:animated_floating_buttons/animated_floating_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:trust_reservation_second/constants/colors_app.dart';
@@ -22,11 +21,11 @@ class ReservationDetailsScreen extends StatelessWidget {
         },
         heroTag: "edit",
         tooltip: 'Edit',
+        backgroundColor: ColorsApp.primaryColor,
         child: const Icon(
           Icons.edit,
           color: Colors.white,
         ),
-        backgroundColor: ColorsApp.primaryColor,
       );
     }
 
@@ -37,11 +36,11 @@ class ReservationDetailsScreen extends StatelessWidget {
         },
         heroTag: "delete",
         tooltip: 'Delete',
+        backgroundColor: ColorsApp.primaryColor,
         child: const Icon(
           Icons.delete,
           color: Colors.white,
         ),
-        backgroundColor: ColorsApp.primaryColor,
       );
     }
 
@@ -52,8 +51,8 @@ class ReservationDetailsScreen extends StatelessWidget {
         },
         heroTag: "share",
         tooltip: 'Share',
-        child: const Icon(Icons.share, color: Colors.white),
         backgroundColor: ColorsApp.primaryColor,
+        child: const Icon(Icons.share, color: Colors.white),
       );
     }
 

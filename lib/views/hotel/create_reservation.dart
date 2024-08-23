@@ -1,8 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trust_reservation_second/constants/colors_app.dart';
 import 'package:trust_reservation_second/services/reservation_service.dart';
@@ -215,46 +219,35 @@ Future<void> _showSummary() async {
               Navigator.of(context).pop();
             },
           ),
-        TextButton(
+       TextButton(
   child: const Text('Réserver'),
   onPressed: () async {
     try {
-      if (_isNewClient && (_firstNameController.text.isEmpty || _lastNameController.text.isEmpty || _phoneController.text.isEmpty || _emailController.text.isEmpty || _clientAddressController.text.isEmpty)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Veuillez remplir tous les champs pour créer un nouveau client')),
-        );
-        return;
-      }
+      if (_isNewClient) {
+        if (_firstNameController.text.isEmpty || _lastNameController.text.isEmpty || _phoneController.text.isEmpty || _emailController.text.isEmpty || _clientAddressController.text.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Veuillez remplir tous les champs pour créer un nouveau client')),
+          );
+          return;
+        }
 
-      if (!_isNewClient && _selectedClientId == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Veuillez choisir un client existant')),
-        );
-        return;
-      }
+        final clientId = await _reservationService.createClient({
+          'first_name': _firstNameController.text,
+          'last_name': _lastNameController.text,
+          'phone': _phoneController.text,
+          'email': _emailController.text,
+          'address': _clientAddressController.text,
+          'type_client': _selectedClientType ?? 'client_simple',
+          'type_utilisateur': 'client',
+        });
 
-      final client = _isNewClient
-          ? {
-              'id': 0,
-              'first_name': _firstNameController.text,
-              'last_name': _lastNameController.text,
-              'phone': _phoneController.text,
-              'email': _emailController.text,
-              'address': _clientAddressController.text,
-              'type_client': _selectedClientType ?? 'client_simple',
-              'type_utilisateur': 'client',
-            }
-          : {
-              'id': int.parse(_selectedClientId!),
-              'first_name': '',
-              'last_name': '',
-              'phone': '',
-              'email': '',
-              'address': ''
-            };
+        setState(() {
+          _selectedClientId = clientId.toString();
+        });
+      }
 
       await _reservationService.createReservation({
-        'client': client,
+        'client': {'id': int.parse(_selectedClientId!)},
         'depart': _addressController.text,
         'destination': _destinationController.text,
         'datePriseEnCharge': _selectedDate!.toIso8601String(),
@@ -276,7 +269,7 @@ Future<void> _showSummary() async {
         'coutTotal': _estimation,
         'totalAttributCost': '0',
         'destinationInputs': 'Default',
-        'utilisateur': _userId,  // Utilisez _userId
+        'utilisateur': _userId,
       });
 
       await _reservationService.clearLocalStorage();
@@ -286,9 +279,14 @@ Future<void> _showSummary() async {
         _currentStep = 0;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Réservation effectuée avec succès')),
-      );
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Réservation créée avec succès!')),
+          );
+        }
+      });
+
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -297,8 +295,6 @@ Future<void> _showSummary() async {
     }
   },
 ),
-  
-
         ],
       );
     },
@@ -582,10 +578,10 @@ Future<void> _showSummary() async {
               Center(
                 child: Container(
                   margin: const EdgeInsets.all(8.0),
-                  width: 24,
-                  height: 24,
+                  width: 25,
+                  height: 25,
                   decoration: BoxDecoration(
-                    color: step == index ? ColorsApp.primaryColor : Colors.grey,
+                    color: step == index ? ColorsApp.primaryColor : Color.fromARGB(255, 116, 114, 114),
                     shape: BoxShape.circle,
                   ),
                   child: Center(
@@ -614,94 +610,116 @@ Future<void> _showSummary() async {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double containerWidth = width * 0.9;
+
+    if (ResponsiveBreakpoints.of(context).largerThan(TABLET)) {
+      containerWidth = width * 0.6;
+    }
+    if (ResponsiveBreakpoints.of(context).largerThan(DESKTOP)) {
+      containerWidth = width * 0.4;
+    }
+
     return Center(
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         backgroundColor: Colors.white,
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_sharp, color: Colors.black),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          title: const Center(
-            child: Text(
-              '',
-              style: TextStyle(fontWeight: FontWeight.bold),
+        
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset(
+              'assets/carousel_image_4.jpg',
+              fit: BoxFit.cover,
             ),
-          ),
-          centerTitle: true,
-        ),
-        body: SingleChildScrollView(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8.0),
-                    child: const Text(
-                      'Reservation',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  _buildStepIndicator(_currentStep),
-                  const SizedBox(height: 40),
-                  Container(
-                    padding: const EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Center(
-                          child: Text(
-                            'Étape ${_currentStep + 1}',
-                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+              child: Container(
+                color: Colors.black.withOpacity(0.1),
+              ),
+            ),
+            SingleChildScrollView(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 100),
+                      // const SizedBox(height: 130),
+                      Container(
+                        padding: const EdgeInsets.all(8.0),
+                        child: const Text(
+                          'Reservation',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color:ColorsApp.primaryColor,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        _getStepContents(context)[_currentStep],
-                        const SizedBox(height: 24),
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: CustomButton(
-                                backgroundColor: Colors.blue,
-                                onPressed: _continue,
-                                text: _currentStep == 3 ? 'Confirmer' : 'Continuer',
-                                disabled: !_validateStepFields(),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: OutlinedButton(
-                                onPressed: _cancel,
-                                style: OutlinedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8)),
-                                  minimumSize: const Size(50, 50),
-                                ),
-                                child: const Text('Annuler'),
-                              ),
+                      ),
+                      const SizedBox(height: 10),
+                      _buildStepIndicator(_currentStep),
+                      const SizedBox(height: 20),
+                      Container(
+                        width: containerWidth,
+                        padding: const EdgeInsets.all(16.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                              spreadRadius: 10,
                             ),
                           ],
                         ),
-                      ],
-                    ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Center(
+                              child: Text(
+                                'Étape ${_currentStep + 1}',
+                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            _getStepContents(context)[_currentStep],
+                            const SizedBox(height: 24),
+                            Row(
+                              children: <Widget>[
+                                Expanded(
+                                  child: CustomButton(
+                                    backgroundColor: Colors.blue,
+                                    onPressed: _continue,
+                                    text: _currentStep == 3 ? 'Confirmer' : 'Continuer',
+                                    disabled: !_validateStepFields(),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: OutlinedButton(
+                                    onPressed: _cancel,
+                                    style: OutlinedButton.styleFrom(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                      minimumSize: const Size(50, 50),
+                                    ),
+                                    child: const Text('Annuler'),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );

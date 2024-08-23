@@ -3,11 +3,13 @@ import 'package:trust_reservation_second/constants/colors_app.dart';
 import 'package:trust_reservation_second/widgets/custom_icon_button.dart';
 
 class PersonalInformationScreen extends StatelessWidget {
+  const PersonalInformationScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Informations personnelles'),
+        title: const Text('Informations personnelles'),
         backgroundColor: ColorsApp.primaryColor,
       ),
       body: Padding(
@@ -23,7 +25,7 @@ class PersonalInformationScreen extends StatelessWidget {
             _buildDropdownField('Département', ['Option 1', 'Option 2']),
             _buildDropdownField('Ville', ['Option 1', 'Option 2']),
             _buildTextField('Adresse de résidence', 'Adresse'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             CustomIconButton(
               icon: Icons.save,
               label: "enregister",

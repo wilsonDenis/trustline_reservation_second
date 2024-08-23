@@ -7,9 +7,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:trust_reservation_second/constants/colors_app.dart';
 import 'package:trust_reservation_second/services/auth_service.dart';
 import 'package:trust_reservation_second/services/chauffeur_service.dart';
+import 'package:trust_reservation_second/services/api_service.dart'; // Import de ApiService
 import 'package:trust_reservation_second/views/login_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
+
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
@@ -17,6 +20,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final ChauffeurService _chauffeurService = ChauffeurService();
   final AuthService _authService = AuthService();
+  final ApiService _apiService = ApiService(); // Instance d'ApiService pour obtenir l'URL de base
   late Future<Response> _chauffeurData;
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
@@ -24,6 +28,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late TextEditingController _emailController;
   late TextEditingController _adresseController;
   String? _photoUrl;
+  // ignore: unused_field
   File? _image;
 
   @override
@@ -71,14 +76,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               CircleAvatar(
                 radius: 50,
-                backgroundImage: _image != null
-                    ? FileImage(_image!)
+                backgroundImage: (_photoUrl != null && _photoUrl!.isNotEmpty)
+                    ? NetworkImage(_photoUrl!)
                     : const AssetImage('assets/icon_profile.png') as ImageProvider,
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Changer photo',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                onBackgroundImageError: (exception, stackTrace) {
+                  if (kDebugMode) {
+                    print('Erreur de chargement de l\'image: $exception');
+                  }
+                },
               ),
               const SizedBox(height: 16),
               SizedBox(
@@ -88,7 +93,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Navigator.pop(context);
                     _pickImage(ImageSource.camera);
                   },
-                  child: const Text('Prendre une photo'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ColorsApp.primaryColor,
                     shape: RoundedRectangleBorder(
@@ -96,6 +100,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                   ),
+                  child: const Text('Prendre une photo'),
                 ),
               ),
               const SizedBox(height: 8),
@@ -106,10 +111,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Navigator.pop(context);
                     _pickImage(ImageSource.gallery);
                   },
-                  child: const Text('Choisir de la galerie'),
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                   ),
+                  child: const Text('Choisir de la galerie'),
                 ),
               ),
             ],
@@ -181,7 +186,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Configuration de l'Hôtel"),
+        title: const Text("Configuration Chauffeur"),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_sharp, color: Colors.black),
           onPressed: () {
@@ -199,12 +204,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             return Center(child: Text('Erreur: ${snapshot.error}'));
           } else if (snapshot.hasData && snapshot.data!.data != null) {
             var data = snapshot.data!.data;
-            _firstNameController.text = data['first_name'];
-            _lastNameController.text = data['last_name'];
-            _telephoneController.text = data['telephone'];
-            _emailController.text = data['email'];
-            _adresseController.text = data['adresse'];
-            _photoUrl = data['photo'];
+            _firstNameController.text = data['first_name'] ?? '';
+            _lastNameController.text = data['last_name'] ?? '';
+            _telephoneController.text = data['telephone'] ?? '';
+            _emailController.text = data['email'] ?? '';
+            _adresseController.text = data['adresse'] ?? '';
+            _photoUrl = data['photo'] != null
+                ? '${_apiService.baseUrl}${data['photo']}'.replaceFirst('/api', '') // Formatage correct de l'URL
+                : null;
 
             return Padding(
               padding: const EdgeInsets.all(16.0),
@@ -212,17 +219,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(height: 40),
-                 CircleAvatar(
-  radius: 50,
-  backgroundImage: (_photoUrl != null && _photoUrl!.isNotEmpty)
-      ? NetworkImage('$_photoUrl?${DateTime.now().millisecondsSinceEpoch}')
-      : const AssetImage('assets/icon_profile.png') as ImageProvider,
-  onBackgroundImageError: (exception, stackTrace) {
-    if (kDebugMode) {
-      print('Erreur de chargement de l\'image: $exception');
-    }
-  },
-),
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundImage: (_photoUrl != null && _photoUrl!.isNotEmpty)
+                        ? NetworkImage('$_photoUrl?${DateTime.now().millisecondsSinceEpoch}')
+                        : const AssetImage('assets/icon_profile.png') as ImageProvider,
+                    onBackgroundImageError: (exception, stackTrace) {
+                      if (kDebugMode) {
+                        print('Erreur de chargement de l\'image: $exception');
+                      }
+                    },
+                  ),
                   const SizedBox(height: 8),
                   Text(
                     '${_firstNameController.text} ${_lastNameController.text}',

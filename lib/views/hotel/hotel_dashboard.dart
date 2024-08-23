@@ -50,9 +50,16 @@ class _HotelDashboardState extends State<HotelDashboard> {
   }
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => UserListPage()),
+      );
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
   }
 
   Future<void> _logout() async {
@@ -75,8 +82,6 @@ class _HotelDashboardState extends State<HotelDashboard> {
       switch (_selectedIndex) {
         case 0:
           return _buildHomePage(todayDate);
-        case 1:
-          return  UserListPage(); // Page pour la liste des utilisateurs
         default:
           return _buildHomePage(todayDate);
       }
@@ -109,7 +114,7 @@ class _HotelDashboardState extends State<HotelDashboard> {
                         hotelInfo['nom'] ?? 'Nom de l\'hôtel',
                         style: const TextStyle(
                           fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                          // fontWeight: FontWeight.bold,
                           color: ColorsApp.primaryColor,
                         ),
                       ),
@@ -149,11 +154,12 @@ class _HotelDashboardState extends State<HotelDashboard> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home, color: Colors.grey), // Icône de la page d'accueil
+            icon: Icon(Icons.home, color: Color.fromARGB(255, 159, 158, 158)), // Icône de la page d'accueil
             label: 'Accueil',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.message, color: Colors.grey), // Icône des messages
+            // icon: Icon(Icons.message, color: Colors.grey), // Icône des messages
+            icon: Icon(Icons.message, color: Color.fromARGB(255, 159, 158, 158)), // Icône des messages
             label: 'Messages',
           ),
         ],
@@ -168,7 +174,7 @@ class _HotelDashboardState extends State<HotelDashboard> {
   Widget _buildHomePage(String todayDate) {
     final List<Map<String, dynamic>> dashboardItems = [
       {
-        'title': 'Create Reservation',
+        'title': 'Reservation',
         'count': 0,
         'icon': Icons.add,
         'color': Colors.pink,
@@ -188,8 +194,8 @@ class _HotelDashboardState extends State<HotelDashboard> {
         ),
       },
       {
-        'title': 'History Reservations',
-        'count': 54,
+        'title': 'Historique Reservations',
+        'count': 20,
         'icon': Icons.history_toggle_off,
         'color': Colors.blue,
         'onTap': () => Navigator.push(
@@ -198,9 +204,9 @@ class _HotelDashboardState extends State<HotelDashboard> {
         ),
       },
       {
-        'title': 'Invoices',
-        'count': 48,
-        'icon': Icons.inventory_outlined,
+        'title': 'statistiques',
+        'count': 55,
+        'icon': Icons.stacked_bar_chart_sharp,
         'color': Colors.green,
         'onTap': () => Navigator.push(
           context,
@@ -212,7 +218,7 @@ class _HotelDashboardState extends State<HotelDashboard> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          const SizedBox(height: 30),
+          const SizedBox(height: 20),
           CarouselSlider(
             options: CarouselOptions(
               height: 250.0,
@@ -228,7 +234,9 @@ class _HotelDashboardState extends State<HotelDashboard> {
               return Builder(
                 builder: (BuildContext context) {
                   return Container(
-                    width: MediaQuery.of(context).size.width,
+                    // width: MediaQuery.of(context).size.width,
+                    width: 700,
+                    height: 700,
                     margin: const EdgeInsets.symmetric(horizontal: 5.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
@@ -243,7 +251,7 @@ class _HotelDashboardState extends State<HotelDashboard> {
               );
             }).toList(),
           ),
-          const SizedBox(height: 25),
+          const SizedBox(height: 30),
           Padding(
             padding: EdgeInsets.symmetric(
               horizontal: ResponsiveBreakpoints.of(context).largerThan(TABLET) ? 64.0 : 16.0,

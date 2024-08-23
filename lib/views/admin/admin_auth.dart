@@ -4,7 +4,7 @@ import 'package:trust_reservation_second/widgets/rectangle_button.dart';
 import '../../widgets/code_input_field.dart';
 
 class AdminAuth extends StatefulWidget {
-  const AdminAuth({Key? key}) : super(key: key);
+  const AdminAuth({super.key});
 
   @override
   _AdminAuthState createState() => _AdminAuthState();

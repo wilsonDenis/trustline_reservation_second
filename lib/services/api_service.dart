@@ -6,12 +6,14 @@ class ApiService {
   final Dio _dio = Dio(
     BaseOptions(
       // baseUrl: 'https://laconciergerie-i-carre.com/testApi/api', // Remplacez par votre URL ngrok actuelle
-      baseUrl: 'https://1b35-2c0f-f0f8-818-4705-c135-11b0-1a47-dad1.ngrok-free.app/api', // Remplacez par votre URL ngrok actuelle
-      connectTimeout: const Duration(seconds: 15), // Délai d'attente de connexion (9 secondes)
-      receiveTimeout: const Duration(seconds: 15), // Délai d'attente de réception (6 secondes)
+      // baseUrl: 'https://25a0-2c0f-f0f8-828-e540-30fd-74d7-34e0-c437.ngrok-free.app/api',
+      baseUrl: 'http://192.168.1.66:8081/api',
+      // baseUrl: 'http://0.0.0.0:8081/api',
+      connectTimeout: const Duration(seconds: 20), // Délai d'attente de connexion (9 secondes)
+      receiveTimeout: const Duration(seconds: 20), // Délai d'attente de réception (6 secondes)
     ),
   );
-
+  String get baseUrl => _dio.options.baseUrl;
   ApiService() {
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {

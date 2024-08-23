@@ -11,7 +11,7 @@ class CodeInputField extends StatelessWidget {
   final double fieldSpacing;
 
   const CodeInputField({
-    Key? key,
+    super.key,
     required this.controllers,
     this.numberOfFields = 4,
     this.fieldWidth = 60.0,
@@ -20,7 +20,7 @@ class CodeInputField extends StatelessWidget {
     this.backgroundColor = Colors.grey,
     this.textStyle = const TextStyle(fontSize: 24.0),
     this.fieldSpacing = 8.0,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

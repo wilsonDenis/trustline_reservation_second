@@ -10,7 +10,7 @@ class InvoiceDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(226, 255, 255, 255),
+      backgroundColor: const Color.fromARGB(226, 255, 255, 255),
       appBar: AppBar(
         backgroundColor: primaryColor,
         title: const Text('Invoice Details'),

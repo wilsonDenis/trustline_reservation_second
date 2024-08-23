@@ -13,7 +13,7 @@ Future<void> loadAddresses(TextEditingController addressController) async {
 
 Future<void> getCurrentLocation(TextEditingController addressController) async {
   // Simule l'obtention de l'adresse actuelle de l'hôtel
-  final currentAddress = 'Adresse actuelle de l\'hôtel'; // Remplacez par l'appel à votre service de localisation réel
+  const currentAddress = 'Adresse actuelle de l\'hôtel'; // Remplacez par l'appel à votre service de localisation réel
   addressController.text = currentAddress;
 }
 

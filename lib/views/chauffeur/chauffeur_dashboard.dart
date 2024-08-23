@@ -7,6 +7,7 @@ import 'package:trust_reservation_second/services/user_service.dart';
 import 'package:trust_reservation_second/services/chauffeur_service.dart';
 import 'package:trust_reservation_second/views/chauffeur/profile_screen.dart';
 import 'package:trust_reservation_second/views/hotel/hotel_notifications_page.dart';
+import 'package:trust_reservation_second/services/api_service.dart'; // Import du ApiService
 
 class ChauffeurDashboard extends StatefulWidget {
   const ChauffeurDashboard({super.key});
@@ -19,6 +20,7 @@ class _ChauffeurDashboardState extends State<ChauffeurDashboard> {
   int _selectedIndex = 0;
   final UserService _userService = UserService();
   final ChauffeurService _chauffeurService = ChauffeurService();
+  final ApiService _apiService = ApiService(); // Création d'une instance d'ApiService
   Future<Response>? _chauffeurData;
   Future<Response>? _todayTrip;
   Future<Response>? _rating;
@@ -51,7 +53,9 @@ class _ChauffeurDashboardState extends State<ChauffeurDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       appBar: AppBar(
+        
         backgroundColor: Colors.black,
         elevation: 0,
         title: FutureBuilder<Response>(
@@ -66,7 +70,6 @@ class _ChauffeurDashboardState extends State<ChauffeurDashboard> {
                     const CircleAvatar(radius: 20, backgroundColor: Colors.white),
                     const SizedBox(width: 10),
                     Container(
-                     
                       width: 80,
                       height: 5,
                       color: Colors.white,
@@ -78,12 +81,14 @@ class _ChauffeurDashboardState extends State<ChauffeurDashboard> {
               return const Text('Erreur', style: TextStyle(color: Colors.white));
             } else if (snapshot.hasData && snapshot.data!.data != null) {
               var data = snapshot.data!.data;
+              String photoUrl = '${_apiService.baseUrl.replaceAll('/api', '')}${data['photo']}'; // Construction de l'URL dynamique
+
               return GestureDetector(
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ProfileScreen(),
+                      builder: (context) => const ProfileScreen(),
                     ),
                   );
                 },
@@ -91,10 +96,7 @@ class _ChauffeurDashboardState extends State<ChauffeurDashboard> {
                   children: [
                     CircleAvatar(
                       radius: 24,
-                      backgroundImage: NetworkImage(
-                        // 'https://fe4b-102-64-168-107.ngrok-free.app${data['photo']}',
-                        'https://laconciergerie-i-carre.com/testApi${data['photo']}',
-                      ),
+                      backgroundImage: NetworkImage(photoUrl), // Utilisation de l'URL dynamique
                     ),
                     const SizedBox(width: 40),
                     Flexible(
@@ -142,7 +144,7 @@ class _ChauffeurDashboardState extends State<ChauffeurDashboard> {
             ),
           ),
           BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
+            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
             child: Container(
               color: Colors.black.withOpacity(0.2),
             ),
@@ -161,22 +163,23 @@ class _ChauffeurDashboardState extends State<ChauffeurDashboard> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor:const  Color.fromARGB(241, 0, 0, 0),
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home, color: Colors.black),
+            icon: Icon(Icons.home, color: Colors.white),
             label: 'Aperçu',
           ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.local_offer, color: Colors.black),
+          //   label: 'Offres',
+          // ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.local_offer, color: Colors.black),
-            label: 'Offres',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.event, color: Colors.black),
+            icon: Icon(Icons.event, color: Colors.white),
             label: 'Planifié',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.check_circle, color: Colors.black),
-            label: 'Terminé',
+            icon: Icon(Icons.message, color: Colors.white),
+            label: 'message',
           ),
         ],
         currentIndex: _selectedIndex,

@@ -16,6 +16,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   Future<void> _logout() async {
     await Future.delayed(const Duration(seconds: 1));
     Navigator.pushAndRemoveUntil(
+      // ignore: use_build_context_synchronously
       context,
       MaterialPageRoute(builder: (context) => const LoginScreen()),
       (route) => false,
@@ -465,10 +466,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           ),
                         ],
                       ),
-                      child: Row(
+                      child: const Row(
                         children: [
-                          const Icon(Icons.local_fire_department, color: Colors.red),
-                          const SizedBox(width: 8),
+                          Icon(Icons.local_fire_department, color: Colors.red),
+                          SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               'Your sales are down, let’s increase it again.',

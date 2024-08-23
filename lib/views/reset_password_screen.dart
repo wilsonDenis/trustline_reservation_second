@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:trust_reservation_second/constants/colors_app.dart';
 import 'package:trust_reservation_second/widgets/custom_text_form_field.dart';
@@ -5,7 +7,7 @@ import 'package:trust_reservation_second/widgets/rectangle_button.dart';
 import 'package:trust_reservation_second/services/auth_service.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
-  const ResetPasswordScreen({Key? key}) : super(key: key);
+  const ResetPasswordScreen({super.key});
 
   @override
   _ResetPasswordScreenState createState() => _ResetPasswordScreenState();

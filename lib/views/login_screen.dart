@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:trust_reservation_second/constants/colors_app.dart';
 import 'package:trust_reservation_second/services/auth_service.dart';
 import 'package:trust_reservation_second/services/local_storage.dart';
@@ -134,15 +135,16 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Icon(
-                  Icons.send_and_archive_rounded,
+                  Icons.car_repair,
+                  // Icons.send_and_archive_rounded,
                   size: 100,
                   color: Colors.white,
                 ),
                 SizedBox(height: 10),
                 Text(
-                  'TrustLine',
+                  'NDJO-HOTEL',
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
@@ -242,7 +244,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 ),
                                 minimumSize: Size(double.infinity, height * 0.07),
                               ),
-                              child: const Text('Se connecter'),
+                              child: const Text('Se connecter',style: TextStyle( fontWeight: FontWeight.bold,fontSize: 17.5),),
+                              
                             ),
                           ],
                         ),

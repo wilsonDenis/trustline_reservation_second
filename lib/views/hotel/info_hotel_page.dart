@@ -46,7 +46,7 @@ class _InfoHotelState extends State<InfoHotel> {
         future: _hotelInfo,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
@@ -125,9 +125,10 @@ class _InfoHotelState extends State<InfoHotel> {
                           style: const TextStyle(fontSize: 16),
                         ),
                         const SizedBox(height: 8),
-                        Text(
-                          'Entreprise: ${hotelInfo['entreprise'] ?? 'N/A'}',
-                          style: const TextStyle(fontSize: 16),
+                        const Text(
+                          // 'Entreprise: ${hotelInfo['entreprise'] ?? 'N/A'}',
+                          'Evaluation: 5.0',
+                          style: TextStyle(fontSize: 16),
                         ),
                       ],
                     ),
@@ -175,7 +176,7 @@ class _InfoHotelState extends State<InfoHotel> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                         ListReceptionnistesScreen())),
+                                         const ListReceptionnistesScreen())),
                               buttonText: '',
                               buttonColor: ColorsApp.primaryColor,
                               textColor: Colors.white,
@@ -193,7 +194,7 @@ class _InfoHotelState extends State<InfoHotel> {
               ],
             );
           } else {
-            return Center(child: Text('No data'));
+            return const Center(child: Text('No data'));
           }
         },
       ),

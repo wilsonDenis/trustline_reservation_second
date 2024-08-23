@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 
 class HomeDriver extends StatefulWidget {
+  const HomeDriver({super.key});
+
   @override
   _HomeDriverState createState() => _HomeDriverState();
 }
@@ -13,9 +15,9 @@ class _HomeDriverState extends State<HomeDriver> {
 
   static final List<Widget> _widgetOptions = <Widget>[
     const HomePage(),
-    OffersPage(),
-    PlannedPage(),
-    FinishedPage(),
+    const OffersPage(),
+    const PlannedPage(),
+    const FinishedPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -122,6 +124,8 @@ class HomePage extends StatelessWidget {
 }
 
 class OffersPage extends StatelessWidget {
+  const OffersPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return const Center(
@@ -131,6 +135,8 @@ class OffersPage extends StatelessWidget {
 }
 
 class PlannedPage extends StatelessWidget {
+  const PlannedPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return const Center(

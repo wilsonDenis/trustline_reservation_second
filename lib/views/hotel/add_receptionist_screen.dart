@@ -99,7 +99,7 @@ class _AddReceptionistScreenState extends State<AddReceptionistScreen> {
                     children: [
                       const Center(
                         child: Text(
-                          "Add Receptionist",
+                          "Ajouter Receptionniste",
                           style: TextStyle(
                               fontSize: 24, fontWeight: FontWeight.bold),
                         ),
@@ -150,7 +150,7 @@ class _AddReceptionistScreenState extends State<AddReceptionistScreen> {
                               );
                             }
                           },
-                          text: 'ajouter',
+                          text: 'créer',
                           backgroundColor: Colors.blue,
                         ),
                       ),

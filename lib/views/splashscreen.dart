@@ -6,7 +6,7 @@ import 'package:trust_reservation_second/views/hotel/hotel_dashboard.dart';
 import 'package:trust_reservation_second/views/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -26,23 +26,28 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (userType != null) {
       if (userType == 'administrateur') {
+        // ignore: use_build_context_synchronously
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const AdminDashboard()),
         );
       } else if (userType == 'chauffeur') {
+        // ignore: use_build_context_synchronously
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const ChauffeurDashboard()),
         );
       } else if (userType == 'hotel') {
+        // ignore: use_build_context_synchronously
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const HotelDashboard()),
         );
       } else {
+        // ignore: use_build_context_synchronously
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const LoginScreen()),
         );
       }
     } else {
+      // ignore: use_build_context_synchronously
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const LoginScreen()),
       );

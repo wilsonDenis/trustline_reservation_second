@@ -26,12 +26,12 @@ class ChauffeurService {
 
   Future<Response> updateChauffeur(Map<String, dynamic> data) async {
     final int chauffeurId = await LocalStorageService.getData('userId');
-    return await _apiService.putData('/auth/chauffeurCrudFlutter/$chauffeurId/', data);
+    return await _apiService.putData('/auth/chauffeur/update/$chauffeurId/', data);
   }
 
-  Future<Response> deleteChauffeur(int chauffeurId) async {
-    return await _apiService.deleteData('/auth/chauffeurCrudFlutter/$chauffeurId/');
-  }
+  // Future<Response> deleteChauffeur(int chauffeurId) async {
+  //   return await _apiService.deleteData('/auth/chauffeurCrudFlutter/$chauffeurId/');
+  // }
 }
 
 
