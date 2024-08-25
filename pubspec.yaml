@@ -56,6 +56,7 @@ dependencies:
   # flutter_google_places: ^0.3.0
   # google_maps_webservice: ^0.0.19
   geolocator: ^12.0.0
+  geocoding: ^3.0.0
   dio: ^5.5.0+1
   animated_floating_buttons: ^0.0.2
   flutter_localizations:

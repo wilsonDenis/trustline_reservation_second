@@ -15,9 +15,20 @@ class UserService {
   Future<Response> getUser(int userId) async {
     return await _apiService.getData('/users/$userId');
   }
+// // ------------------MISE A JOUR HOTEL
+//   Future<Response> updateHotel(Map<String, dynamic> data) async {
+//     return await _apiService.putData('/auth/hotels/update/', data);
+//   }
 
-  Future<Response> updateUser(int userId, Map<String, dynamic> data) async {
-    return await _apiService.putData('/users/$userId', data);
+
+  Future<Response> updateHotel(dynamic data, {required bool isFormData}) async {
+    if (data is FormData) {
+      return await _apiService.putDataWithFormData('/auth/hotels/update/', data);
+    } else if (data is Map<String, dynamic>) {
+      return await _apiService.putData('/auth/hotels/update/', data);
+    } else {
+      throw ArgumentError('Invalid data type: ${data.runtimeType}');
+    }
   }
 
   Future<Response> deleteUser(int userId) async {
@@ -49,7 +60,7 @@ class UserService {
     final userType = await LocalStorageService.getData('user_type');
     final specificId = await LocalStorageService.getData('specific_id');
     if (kDebugMode) {
-      print('-------------------------------voici :  userId: $userId, userType: $userType, specificId: $specificId------');
+      print('-----------------getUserInfo()voici :  userId: $userId, userType: $userType, specificId: $specificId------');
     }
     return {
       'userId': userId,
@@ -73,100 +84,123 @@ class UserService {
   }
 
    // Nouvelle méthode pour récupérer tous les chauffeurs
-  Future<List<Map<String, dynamic>>> getAllChauffeurs() async {
-    if (kDebugMode) {
-      print('Récupération de tous les chauffeurs...');
-    }
-    
+Future<List<Map<String, dynamic>>> getAllChauffeurs() async {
+  if (kDebugMode) {
+    print('Démarrage de la récupération de tous les chauffeurs...');
+  }
+
+  try {
     final response = await _apiService.getData('/gve/chauffeurs/');
-    
+
     if (kDebugMode) {
       print('Status code de la réponse pour chauffeurs: ${response.statusCode}');
-      print('Réponse pour chauffeurs: ${response.data}');
+      print('Réponse brute pour chauffeurs: ${response.data}');
     }
 
+    // Vérification du statut de la réponse
     if (response.statusCode == 200) {
-      return List<Map<String, dynamic>>.from(response.data);
+      List<Map<String, dynamic>> chauffeurs = List<Map<String, dynamic>>.from(response.data);
+
+      // Vérification et affichage des informations des chauffeurs
+      for (var chauffeur in chauffeurs) {
+        String firstName = chauffeur['first_name'] ?? 'Prénom non disponible';
+        String lastName = chauffeur['last_name'] ?? 'Nom non disponible';
+        String idChauffeur = chauffeur['personne_ptr']?.toString() ?? 'ID non disponible'; // Utilisation de `personne_ptr`
+        String typeUtilisateur=chauffeur['type_utilisateur'];
+
+        if (kDebugMode) {
+          print('--------USERSERVICE-------getAllChauffeurs(): Chauffeur récupéré — Nom: $firstName $lastName, ID: $idChauffeur    type_utilisateur: $typeUtilisateur',);
+        }
+      }
+
+      return chauffeurs;
     } else {
-      throw Exception('Failed to load chauffeurs');
+      if (kDebugMode) {
+        print('Échec de la récupération des chauffeurs. Statut de la réponse: ${response.statusCode}');
+      }
+      throw Exception('Erreur lors du chargement des chauffeurs');
     }
+  } catch (e) {
+    if (kDebugMode) {
+      print('Exception lors de la récupération des chauffeurs: $e');
+    }
+    throw Exception('Erreur lors de la récupération des chauffeurs: $e');
+  }
+}
+
+
+Future<List<Map<String, dynamic>>> getAllHotels() async {
+  if (kDebugMode) {
+    print('Récupération de tous les hôtels...');
   }
 
-  // Nouvelle méthode pour récupérer tous les hôtels
-  Future<List<Map<String, dynamic>>> getAllHotels() async {
-    if (kDebugMode) {
-      print('Récupération de tous les hôtels...');
-    }
-    
-    final response = await _apiService.getData('/auth/hotelsAll/');
-    
-    if (kDebugMode) {
-      print('Status code de la réponse pour hôtels: ${response.statusCode}');
-      print('Reponse pour hôtels: ${response.data}');
-    }
+  final response = await _apiService.getData('/auth/hotelsAll/');
 
-    if (response.statusCode == 200) {
-      return List<Map<String, dynamic>>.from(response.data);
-    } else {
-      throw Exception('Failed to load hotels');
-    }
+  if (kDebugMode) {
+    print('Status code de la réponse pour hôtels: ${response.statusCode}');
+    print('Réponse pour hôtels: ${response.data}');
   }
+
+  if (response.statusCode == 200) {
+    List<Map<String, dynamic>> hotels = List<Map<String, dynamic>>.from(response.data);
+    
+    // Utilisation de l'ID du gérant comme identifiant de l'hôtel
+    for (var hotel in hotels) {
+      var hotelId = hotel['gerant']['id']; // Utilisation de l'ID du gérant
+      var typeUtilisateur=hotel['gerant']['type_utilisateur'];
+      if (kDebugMode) {
+        print('Hôtel récupéré— Nom: ${hotel['nom']}, ID du gérant: $hotelId , type_utilisateur: $typeUtilisateur');
+      }
+    }
+    
+    return hotels;
+  } else {
+    throw Exception('Failed to load hotels');
+  }
+}
+
+
+
 
   // Méthode pour récupérer et fusionner tous les utilisateurs par type
-  Future<List<Map<String, dynamic>>> getAllUsers() async {
+Future<List<Map<String, dynamic>>> getAllUsers() async {
     try {
-      if (kDebugMode) {
-        print('Recuperation de tous les utilisateurs (chauffeurs et hotels)...');
-      }
-      
-      List<Map<String, dynamic>> allUsers = [];
+        if (kDebugMode) {
+            print('Recuperation de tous les utilisateurs (chauffeurs et hotels)...');
+        }
+        
+        List<Map<String, dynamic>> allUsers = [];
 
-      // Récupérer tous les chauffeurs
-      final chauffeurs = await getAllChauffeurs();
-      if (kDebugMode) {
-        print('Nombre de chauffeurs recuperes: ${chauffeurs.length}');
-      }
-      allUsers.addAll(chauffeurs);
+        // Récupérer tous les chauffeurs
+        final chauffeurs = await getAllChauffeurs();
+        if (kDebugMode) {
+            print('Nombre de chauffeurs recuperes: ${chauffeurs.length}');
+        }
+        allUsers.addAll(chauffeurs);
 
-      // Récupérer tous les hôtels
-      final hotels = await getAllHotels();
-      if (kDebugMode) {
-        print('Nombre d\'hotels recupereres: ${hotels.length}');
-      }
-      allUsers.addAll(hotels);
+        // Récupérer tous les hôtels
+        final hotels = await getAllHotels();
+        if (kDebugMode) {
+            print('--------USERSERVICE-------getAllUsers(): Nombre d\'hotels recupereres: ${hotels.length}');
+        }
+        allUsers.addAll(hotels);
 
-      if (kDebugMode) {
-        print('Total des utilisateurs recuperes: ${allUsers.length}');
-      }
+        if (kDebugMode) {
+            print('Total des utilisateurs recuperes -----USERSERVICE-------getAllUsers(): ${allUsers.length}');
+            for (var user in allUsers) {
+                print('Utilisateur récupéré: ${user['first_name']} ${user['last_name']}, Type: ${user['type_utilisateur']}, ID: ${user['personne_ptr']}');
+            }
+        }
 
-      return allUsers;
+        return allUsers;
     } catch (e) {
-      if (kDebugMode) {
-        print('Erreur lors de la récupération des utilisateurs: $e');
-      }
-      throw Exception('Failed to load users: $e');
+        if (kDebugMode) {
+            print('Erreur lors de la récupération des utilisateurs: $e');
+        }
+        throw Exception('Failed to load users: $e');
     }
-  }
+}
 
-//   api/gve/ chauffeurs/ [name='chauffeur-list-create']
-// api/gve/ chauffeurs/<int:pk>/ [name='chauffeur-detail']
-// api/auth/ hotels/<int:id>/ [name='hotels-detail']
-// la liste des personne et trier en fonction de TYPE_UTILISATEUR chauffeur et hotel
-
-// - pour récupérer les détails d’un chauffeur spécifique
-// Tu passe en paramètre a la route ci dessous l’id de personne (id)
-//     path('chauffeur/<int:pk>/', ChauffeurDetailView.as_view(), name='chauffeur-detail'),
-// -  pour récupérer les détails hôtel spécifique  Tu passe en paramètre a la route ci dessous l’id de personne (id)   path('hotels/<int:id>/', HotelsView.as_view(), name='hotels-detail'),
-
-// les routes :/gve/chauffeurs/<int:pk>/ [name='chauffeur-detail']
-// /auth/hotels/<int:id>/ [name='hotels-detail']
-
-// api/auth/ hotelsActions/<int:id>/ [name='hotels-detail']
-
-
-// api/auth/ receptionnistes/ [name='list-receptionnistes']
-// api/auth/ receptionnistes/<int:id>/ [name='edit-receptionniste']
-// api/auth/ receptionnistes/delete/<int:id>/ [name='delete-receptionniste']
 
 
 }

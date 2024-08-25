@@ -1,12 +1,13 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:trust_reservation_second/services/local_storage.dart';
 import 'package:trust_reservation_second/services/location_service.dart';
+import 'package:trust_reservation_second/services/user_service.dart';
 import 'package:trust_reservation_second/widgets/custom_button.dart';
 import 'package:trust_reservation_second/widgets/custom_text_form_field.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 
 class ConfigurationHotel extends StatefulWidget {
   const ConfigurationHotel({super.key});
@@ -23,6 +24,11 @@ class _ConfigurationHotelState extends State<ConfigurationHotel> {
   final TextEditingController _websiteController = TextEditingController();
   String? _selectedImagePath;
   List<String> _addressSuggestions = [];
+  final UserService _userService = UserService();
+  // ignore: unused_field
+  int? _entrepriseId;  // Pour stocker l'ID de l'entreprise
+  // ignore: unused_field
+  int? _gerantId;  // Pour stocker l'ID du gérant
 
   @override
   void initState() {
@@ -32,15 +38,33 @@ class _ConfigurationHotelState extends State<ConfigurationHotel> {
   }
 
   Future<void> _loadHotelDetails() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _nameController.text = prefs.getString('hotel_name') ?? '';
-      _phoneController.text = prefs.getString('hotel_phone') ?? '';
-      _addressController.text =
-          prefs.getString('hotel_address') ?? 'Adresse de l\'hôtel';
-      _emailController.text = prefs.getString('hotel_email') ?? '';
-      _websiteController.text = prefs.getString('hotel_website') ?? '';
-    });
+    final specificId = await LocalStorageService.getData('specific_id');
+    if (specificId == null) return; // ID non trouvé
+
+    try {
+      final response = await _userService.getHotelInfo(specificId);
+      if (response.statusCode == 200) {
+        final hotelInfo = response.data;
+        setState(() {
+          _nameController.text = hotelInfo['nom'] ?? '';
+          _phoneController.text = hotelInfo['telephone'] ?? '';
+          _addressController.text = hotelInfo['adresse'] ?? '';
+          _emailController.text = hotelInfo['email'] ?? '';
+          _websiteController.text = hotelInfo['site_web'] ?? '';
+          _selectedImagePath = hotelInfo['photo'] ?? ''; // Gérer l'image de l'hôtel
+          _entrepriseId = hotelInfo['entreprise'];  // Récupérer l'ID de l'entreprise
+          _gerantId = hotelInfo['gerant']['id'];  // Récupérer l'ID du gérant
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Échec du chargement des informations de l\'hôtel')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erreur: $e')),
+      );
+    }
   }
 
   Future<void> _saveHotelDetails() async {
@@ -56,47 +80,80 @@ class _ConfigurationHotelState extends State<ConfigurationHotel> {
   }
 
   Future<void> _loadAddressSuggestions() async {
-    _addressSuggestions =
-        (await LocationService.getSuggestions("")).cast<String>();
+    _addressSuggestions = (await LocationService.getSuggestions("")).cast<String>();
   }
 
   Future<void> _selectImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         _selectedImagePath = pickedFile.path;
       });
     }
   }
-
-  Future<void> _uploadImage() async {
-    if (_selectedImagePath == null) return;
-
-    File imageFile = File(_selectedImagePath!);
-    String base64Image = base64Encode(imageFile.readAsBytesSync());
-    String fileName = imageFile.path.split("/").last;
-
-    var response = await http.post(
-      Uri.parse("YOUR_API_ENDPOINT"),
-      body: {
-        "image": base64Image,
-        "name": fileName,
-      },
+Future<void> _updateHotelDetails() async {
+  final specificId = await LocalStorageService.getData('specific_id');
+  if (specificId == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('ID du gérant non trouvé')),
     );
+    return;
+  }
 
-    if (response.statusCode == 200) {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Image uploadée avec succès')),
+  FormData formData = FormData.fromMap({
+    'nom': _nameController.text,
+    'telephone': _phoneController.text,
+    'adresse': _addressController.text,
+    'email': _emailController.text,
+    'site_web': _websiteController.text,
+    'entreprise': 1,  // Utilisez l'ID réel de l'entreprise
+    'gerant': specificId, // Utilisation de l'ID du gérant à partir du local storage
+  });
+
+  if (_selectedImagePath != null && _selectedImagePath!.isNotEmpty) {
+    if (File(_selectedImagePath!).existsSync()) {
+      formData.files.add(
+        MapEntry(
+          'photo',
+          await MultipartFile.fromFile(_selectedImagePath!, filename: 'photo.jpg'),
+        ),
       );
     } else {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Échec du téléchargement de l\'image')),
-      );
+      formData.fields.add(MapEntry('photo', _selectedImagePath!)); // Si c'est une URL existante
     }
   }
+
+  try {
+    var response = await _userService.updateHotel(formData, isFormData: true);
+    if (response.statusCode == 200) {
+      await _saveHotelDetails();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Détails de l\'hôtel enregistrés avec succès')),
+      );
+      Navigator.pop(context, true); // Retourne à la page précédente avec succès
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Échec de la mise à jour des détails de l\'hôtel: ${response.data}')),
+      );
+    }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Erreur: $e')),
+    );
+  }
+}
+
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    _addressController.dispose();
+    _emailController.dispose();
+    _websiteController.dispose();
+    super.dispose();
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -104,16 +161,14 @@ class _ConfigurationHotelState extends State<ConfigurationHotel> {
       appBar: AppBar(
         title: const Text("Configuration de l'Hôtel"),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_sharp,
-              color: Colors.black), // Icune de retour personnalisée
+          icon: const Icon(Icons.arrow_back_ios_sharp, color: Colors.black),
           onPressed: () {
             Navigator.pop(context); // Retourne à la page précédente
           },
         ),
         centerTitle: true,
       ),
-      body: //Center(
-          SingleChildScrollView(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -230,23 +285,16 @@ class _ConfigurationHotelState extends State<ConfigurationHotel> {
                       _phoneController.text.isNotEmpty &&
                       _addressController.text.isNotEmpty &&
                       _emailController.text.isNotEmpty) {
-                    await _saveHotelDetails();
-                    await _uploadImage();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content:
-                            Text('Détails de l\'hôtel enregistrés avec succès'),
-                      ),
-                    );
+                    await _updateHotelDetails();
                   }
                 },
-                text: 'Enregistrer', backgroundColor: Colors.blue,
+                text: 'Enregistrer',
+                backgroundColor: Colors.blue,
               ),
-            ), //
+            ),
           ],
         ),
       ),
-      //  ),
     );
   }
 }

@@ -95,6 +95,29 @@ class ApiService {
       return null;
     }
   }
+//-----------------Nouvelle methode pour envoyer des requêtes avec FormData
+Future<Response> putDataWithFormData(String endpoint, FormData data) async {
+  if (kDebugMode) {
+    print('PUT request with FormData to: ${_dio.options.baseUrl}$endpoint');
+    print('Headers: ${_dio.options.headers}');
+  }
+
+  try {
+    final response = await _dio.put(endpoint, data: data);
+    if (kDebugMode) {
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.data}');
+    }
+    return response;
+  } on DioException catch (e) {
+    if (kDebugMode) {
+      print('Request error: ${e.response?.statusCode} ${e.response?.data}');
+    }
+    rethrow;
+  }
+}
+
+
 
   Future<Response> postData(String endpoint, Map<String, dynamic> data, {bool requireToken = true}) async {
     if (kDebugMode) {

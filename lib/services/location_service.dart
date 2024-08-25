@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 
 class LocationService {
   static const String apiKey = 'AIzaSyBEilIuILbArteSd2h21UUMcTsolLJiQPw';
@@ -21,12 +23,31 @@ class LocationService {
     }
   }
 
-  static Future<String> getCurrentLocationAddress() async {
-    // Remplacez par votre logique pour obtenir l'adresse actuelle
-    const String currentLocationAddress = 'Adresse actuelle de l\'hôtel'; // Remplacez par l'appel à votre service de localisation réel
-    return currentLocationAddress;
+//   static Future<String> getCurrentLocationAddress() async {
+//     // Remplacez par votre logique pour obtenir l'adresse actuelle
+//     const String currentLocationAddress = 'Adresse actuelle de l\'hôtel'; // Remplacez par l'appel à votre service de localisation réel
+//     return currentLocationAddress;
+//   }
+// }
+
+static Future<String> getCurrentLocationAddress() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+
+      if (placemarks.isNotEmpty) {
+        final Placemark place = placemarks[0];
+        final String address = '${place.street}, ${place.locality}, ${place.country}';
+        return address;
+      } else {
+        return 'Adresse non disponible';
+      }
+    } catch (e) {
+      throw Exception('Failed to get current location address: $e');
+    }
   }
 }
+
 
 class Place {
   final String description;

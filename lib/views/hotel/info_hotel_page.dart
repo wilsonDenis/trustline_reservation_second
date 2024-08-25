@@ -51,17 +51,35 @@ class _InfoHotelState extends State<InfoHotel> {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
             final hotelInfo = snapshot.data!;
+            final String? hotelImageUrl = hotelInfo['photo'];
+            const String placeholderImagePath = 'assets/hotel.jpg';
 
             return Stack(
               children: [
                 Column(
                   children: [
-                    Image.asset(
-                      'assets/hotel.jpg',
-                      height: MediaQuery.of(context).size.height / 2,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
+                    hotelImageUrl != null && hotelImageUrl.isNotEmpty
+                        ? Image.network(
+                            'http://192.168.1.66:8081$hotelImageUrl',
+                          
+                            height: MediaQuery.of(context).size.height / 2,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                placeholderImagePath,
+                                height: MediaQuery.of(context).size.height / 2,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              );
+                            },
+                          )
+                        : Image.asset(
+                            placeholderImagePath,
+                            height: MediaQuery.of(context).size.height / 2,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
                     Container(
                       height: MediaQuery.of(context).size.height / 2,
                       color: Colors.grey[300],
@@ -126,7 +144,6 @@ class _InfoHotelState extends State<InfoHotel> {
                         ),
                         const SizedBox(height: 8),
                         const Text(
-                          // 'Entreprise: ${hotelInfo['entreprise'] ?? 'N/A'}',
                           'Evaluation: 5.0',
                           style: TextStyle(fontSize: 16),
                         ),

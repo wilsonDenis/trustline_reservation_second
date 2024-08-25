@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:trust_reservation_second/constants/colors_app.dart';
-import 'package:trust_reservation_second/services/local_storage.dart';
 import 'package:trust_reservation_second/services/message_service.dart';
 
 class IndividualChatPage extends StatefulWidget {
@@ -12,12 +11,12 @@ class IndividualChatPage extends StatefulWidget {
   final String user2PhotoUrl;
 
   const IndividualChatPage({
-    Key? key,
+    super.key,
     required this.user1Id,
     required this.user2Id,
     required this.user2Name,
     required this.user2PhotoUrl,
-  }) : super(key: key);
+  });
 
   @override
   _IndividualChatPageState createState() => _IndividualChatPageState();
@@ -41,15 +40,13 @@ class _IndividualChatPageState extends State<IndividualChatPage> {
       String userId = widget.user1Id;
       String receiverId = widget.user2Id;
 
-      // Définir le `receiverId` en fonction du type d'utilisateur
-      if (await LocalStorageService.getData('user_type') == 'hotel') {
-        receiverId = widget.user2Id; // L'hôtel parle à un chauffeur
-      } else {
-        receiverId = widget.user2Id; // Le chauffeur parle à un hôtel
+      // Log pour déboguer les IDs
+      if (kDebugMode) {
+        print('Initialisation du chat — Sender ID: $userId, Receiver ID: $receiverId');
       }
 
       chatId = _messageService.getChatId(userId, receiverId);
-      
+
       if (chatId == null || chatId!.isEmpty) {
         throw Exception('Failed to generate chat ID');
       }
@@ -59,7 +56,7 @@ class _IndividualChatPageState extends State<IndividualChatPage> {
       });
     } catch (e) {
       if (kDebugMode) {
-        print('Error initializing chatId: $e');
+        print('Erreur lors de l\'initialisation du chatId: $e');
       }
       setState(() {
         isLoading = false; // Fin de l'initialisation, même en cas d'erreur
@@ -161,29 +158,31 @@ class _IndividualChatPageState extends State<IndividualChatPage> {
                                 ),
                               ),
                             ),
-                            CupertinoButton(
-                              child: const Icon(
-                                CupertinoIcons.paperplane_fill,
-                                color: ColorsApp.primaryColor,
-                                size: 30,
-                              ),
-                              onPressed: () async {
-                                if (_messageController.text.isNotEmpty && chatId != null && chatId!.isNotEmpty) {
-                                  await _messageService.sendMessage(
-                                    _messageController.text,
-                                    widget.user2Id,
-                                  );
-                                  _messageController.clear();
+                           CupertinoButton(
+  child: const Icon(
+    CupertinoIcons.paperplane_fill,
+    color: ColorsApp.primaryColor,
+    size: 30,
+  ),
+  onPressed: () async {
+    if (_messageController.text.isNotEmpty && chatId != null && chatId!.isNotEmpty) {
+      await _messageService.sendMessage(
+        _messageController.text,
+        widget.user1Id, // Passer explicitement user1Id comme senderId
+        widget.user2Id,
+      );
+      _messageController.clear();
 
-                                  // Scroller vers le bas après l'envoi d'un message
-                                  _scrollController.animateTo(
-                                    _scrollController.position.minScrollExtent,
-                                    duration: const Duration(milliseconds: 300),
-                                    curve: Curves.easeOut,
-                                  );
-                                }
-                              },
-                            ),
+      // Scroller vers le bas après l'envoi d'un message
+      _scrollController.animateTo(
+        _scrollController.position.minScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  },
+),
+
                           ],
                         ),
                       ),
